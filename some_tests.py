@@ -16,8 +16,10 @@ print("\x1B[41m \x1B[0m : carré rouge ")
 print("\x1B[41mA\x1B[0m : A sur fond rouge")
 
 p = construirePlateau()
-for _ in range(20):
-    placerPionPlateau(p, construirePion(choice(const.COULEURS)), randint(0, const.NB_COLUMNS - 1))
+for _ in range(30):
+    #placerPionPlateau(p, construirePion(choice(const.COULEURS)), randint(0, const.NB_COLUMNS - 1))
+    placerPionPlateau(p, construirePion(1), randint(0, const.NB_COLUMNS - 1))
 print(toStringPlateau(p))
 #print(detecter4horizontalPlateau(p, const.ROUGE))
-print(detecter4verticalPlateau(p, const.ROUGE))
+#print(detecter4verticalPlateau(p, const.ROUGE))
+print(detecter4diagonaleDirectePlateau(p, const.ROUGE))
