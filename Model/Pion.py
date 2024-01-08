@@ -27,6 +27,13 @@ def type_pion(pion: dict) -> bool:
 
 
 def construirePion(couleur:int)-> dict:
+    """
+    Fonction permettant de construire un pion
+    :param couleur: Couleur du pion à construire
+    :return: Dictionnaire représentant un pion
+    :raise TypeError: Si le paramètre n'est pas un entier
+    :raise ValueError: Si l'entier ne représente pas une couleur
+    """
     if type(couleur) != int:
         raise TypeError("construirePion : Le paramètre n'est pas de type entier.")
     if couleur not in const.COULEURS:
@@ -35,12 +42,27 @@ def construirePion(couleur:int)-> dict:
 
 
 def getCouleurPion(pion:dict)-> int:
+    """
+    Récupérer la couleur d'un pion
+    :param pion: Pion dont il faut récupérer la couleur
+    :return: Un entier représentant la couleur du pion
+    :raise TypeError: Si le paramètre n'est pas un pion
+    """
     if type_pion(pion) == False:
         raise TypeError("getCouleurPion : Le paramètre n'est pas un pion.")
     return pion[const.COULEUR]
 
 
 def setCouleurPion(pion:dict, couleur:int)-> None:
+    """
+    Modifier la couleur d'un pion
+    :param pion: Pion dont il faut modifier la couleur
+    :param couleur: La couleur à affecter
+    :return: Aucun
+    :raise TypeError: Si le paramètre n'est pas un pion
+    :raise TypeError: Si le paramètre n'est pas un entier
+    :raise ValueError: Si l'entier ne représente pas une couleur
+    """
     if type_pion(pion) == False:
         raise TypeError("setCouleurPion : Le premier paramètre n'est pas un pion.")
     if type(couleur) != int:
@@ -52,12 +74,26 @@ def setCouleurPion(pion:dict, couleur:int)-> None:
 
 
 def getIdPion(pion:dict)-> int:
+    """
+    Récupérer l'identifiant d'un pion
+    :param pion: Pion dont il faut récupérer l'identifiant
+    :return: Un entier représentant l'identifiant du pion
+    :raise TypeError: Si le paramètre n'est pas un pion
+    """
     if type_pion(pion) == False:
         raise TypeError("getIdPion : Le paramètre n'est pas un pion.")
     return pion[const.ID]
 
 
 def setIdPion(pion:dict, valeur:int)-> None:
+    """
+    Modifier l'identifiant d'un pion
+    :param pion: Pion dont il faut modifier l'identifiant
+    :param valeur: La valeur à affecter
+    :return: Aucun
+    :raise TypeError: Si le paramètre n'est pas un pion
+    :raise TypeError: Si le paramètre n'est pas un entier
+    """
     if type_pion(pion) == False:
         raise TypeError("setIdPion : Le premier paramètre n'est pas un pion.")
     if type(valeur) != int:
