@@ -19,4 +19,5 @@ p = construirePlateau()
 for _ in range(20):
     placerPionPlateau(p, construirePion(choice(const.COULEURS)), randint(0, const.NB_COLUMNS - 1))
 print(toStringPlateau(p))
-print(detecter4horizontalPlateau(p, const.ROUGE))
+#print(detecter4horizontalPlateau(p, const.ROUGE))
+print(detecter4verticalPlateau(p, const.ROUGE))
