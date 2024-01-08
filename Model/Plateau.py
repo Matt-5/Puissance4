@@ -80,3 +80,26 @@ def placerPionPlateau(plateau:list, pion:dict, numeroColonne:int)-> int:
             numLignePion -= 1
         plateau[numLignePion][numeroColonne] = pion
     return numLignePion
+
+
+def toStringPlateau(plateau: list)-> str:
+    """
+    Afficher le plateau sous forme de chaîne de caractères
+    :param plateau: Le plateau à afficher
+    :return: La chaîne de caractères contenant l'affichage de plateau
+    """
+    plateauChaineCaractere = ""
+    for ligne in range(const.NB_LINES):
+        for colonne in range(const.NB_COLUMNS):
+            plateauChaineCaractere += "|"
+            if plateau[ligne][colonne] == None:
+                plateauChaineCaractere += " "
+            elif plateau[ligne][colonne][const.COULEUR] == const.ROUGE:
+                plateauChaineCaractere += "\x1B[41m \x1B[0m"
+            elif plateau[ligne][colonne][const.COULEUR] == const.JAUNE:
+                plateauChaineCaractere += "\x1B[43m \x1B[0m"
+        plateauChaineCaractere += "|\n"
+    plateauChaineCaractere += "-" * (const.NB_COLUMNS * 2 + 1) + "\n"
+    for i in range(const.NB_COLUMNS):
+        plateauChaineCaractere += " " + str(i)
+    return plateauChaineCaractere
