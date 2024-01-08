@@ -22,5 +22,5 @@ for _ in range(30):
 print(toStringPlateau(p))
 #print(detecter4horizontalPlateau(p, const.ROUGE))
 #print(detecter4verticalPlateau(p, const.ROUGE))
-print(detecter4diagonaleDirectePlateau(p, const.ROUGE))
-#print(detecter4diagonaleIndirectePlateau(p, const.ROUGE))
+#print(detecter4diagonaleDirectePlateau(p, const.ROUGE))
+print(detecter4diagonaleIndirectePlateau(p, const.ROUGE))
