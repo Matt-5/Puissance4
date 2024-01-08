@@ -53,5 +53,14 @@ def setCouleurPion(pion:dict, couleur:int)-> None:
 
 def getIdPion(pion:dict)-> int:
     if type_pion(pion) == False:
-        raise TypeError("getIdPion : Le premier paramètre n'est pas un pion.")
+        raise TypeError("getIdPion : Le paramètre n'est pas un pion.")
     return pion[const.ID]
+
+
+def setIdPion(pion:dict, valeur:int)-> None:
+    if type_pion(pion) == False:
+        raise TypeError("setIdPion : Le premier paramètre n'est pas un pion.")
+    if type(valeur) != int:
+        raise TypeError("setIdPion : Le second paramètre n'est pas un entier.")
+    pion[const.ID] = valeur
+    return None
