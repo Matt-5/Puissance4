@@ -200,6 +200,7 @@ def detecter4diagonaleDirectePlateau(plateau:list, couleur:int)-> list:
     if couleur not in const.COULEURS:
         raise ValueError("detecter4diagonaleDirectePlateau : La valeur de la couleur {couleur} n'est pas correcte.")
     listePion = []
+    # Parcours de la diagonale directe centrale, et de celles situées au-dessus
     for colonne in range(const.NB_COLUMNS - 4, -1, -1):
         i = 0
         # Nouvelle diagonale : réinitialisation du compteur de pions alignés
@@ -219,6 +220,7 @@ def detecter4diagonaleDirectePlateau(plateau:list, couleur:int)-> list:
                 listePion += [plateau[i-3][colonne + (i-3)], plateau[i-2][colonne + (i-2)], plateau[i-1][colonne + (i-1)], plateau[i][colonne + i]]
                 nbPionsAlignes = 0
             i += 1
+    # Parcours des diagonales directes situées sous la diagonale centrale (qui est exclue du parcours)
     for ligne in range(1, const.NB_LINES - 3):
         i = 0
         # Nouvelle diagonale : réinitialisation du compteur de pions alignés
@@ -251,17 +253,18 @@ def detecter4diagonaleIndirectePlateau(plateau:list, couleur:int)-> list:
     :raise ValueError: Si l'entier ne représente pas une couleur
     """
     if type_plateau(plateau) == False:
-        raise TypeError("detecter4diagonaleDirectePlateau : Le premier paramètre ne correspond pas à un plateau.")
+        raise TypeError("detecter4diagonaleIndirectePlateau : Le premier paramètre ne correspond pas à un plateau.")
     if type(couleur) != int:
-        raise TypeError("detecter4diagonaleDirectePlateau : Le second paramètre n'est pas un entier.")
+        raise TypeError("detecter4diagonaleIndirectePlateau : Le second paramètre n'est pas un entier.")
     if couleur not in const.COULEURS:
-        raise ValueError("detecter4diagonaleDirectePlateau : La valeur de la couleur {couleur} n'est pas correcte.")
+        raise ValueError("detecter4diagonaleIndirectePlateau : La valeur de la couleur {couleur} n'est pas correcte.")
     listePion = []
+    # Parcours de la diagonale indirecte centrale et de celles situées au-dessus
     for colonne in range(3, const.NB_COLUMNS):
         i = 0
         # Nouvelle diagonale : réinitialisation du compteur de pions alignés
         nbPionsAlignes = 0
-        while i < (const.NB_LINES) and (colonne - i) > 0:
+        while i < (const.NB_LINES) and (colonne - i) >= 0:
             # Si on n'est pas sur un pion, ou que ce n'est pas un pion de la bonne couleur
             if plateau[i][colonne - i] == None or plateau[i][colonne - i][const.COULEUR] != couleur:
                 # Remise du compteur de pions alignés à 0
@@ -273,26 +276,30 @@ def detecter4diagonaleIndirectePlateau(plateau:list, couleur:int)-> list:
             # Si on a 4 pions alignés
             if nbPionsAlignes == 4:
                 # On ajoute ces 4 pions à la liste résultat, et on réinitialise le compteur
-                listePion += [plateau[i+3][colonne - (i+3)], plateau[i+2][colonne - (i+2)], plateau[i+1][colonne - (i+1)], plateau[i][colonne - i]]
+                listePion += [plateau[i-3][colonne - (i-3)], plateau[i-2][colonne - (i-2)], plateau[i-1][colonne - (i-1)], plateau[i][colonne - i]]
                 nbPionsAlignes = 0
-            i -= 1
+            i += 1
+    # Parcours des diagonales indirectes situées sous la diagonale indirecte centrale (qui est exclue)
     for ligne in range(1, const.NB_LINES - 3):
         i = 0
         # Nouvelle diagonale : réinitialisation du compteur de pions alignés
         nbPionsAlignes = 0
-        while i < 0 and (ligne + i) < const.NB_LINES:
+        while 0 <= (const.NB_COLUMNS - 1 - i) and (ligne + i) < const.NB_LINES:
             # Si on n'est pas sur un pion, ou que ce n'est pas un pion de la bonne couleur
-            if plateau[ligne - i][i] == None or plateau[ligne - i][i][const.COULEUR] != couleur:
+            if plateau[ligne + i][const.NB_COLUMNS - 1 - i] == None or plateau[ligne + i][const.NB_COLUMNS - 1 - i][const.COULEUR] != couleur:
                 # Remise du compteur de pions alignés à 0
                 nbPionsAlignes = 0
             # Sinon, c'est un pion de la bonne couleur
-            elif plateau[ligne - i][i][const.COULEUR] == couleur:
+            else:
                 # On incrémente le compteur de pions alignés de 1
                 nbPionsAlignes += 1
             # Si on a 4 pions alignés
             if nbPionsAlignes == 4:
                 # On ajoute ces 4 pions à la liste résultat, et on réinitialise le compteur
-                listePion += [plateau[ligne - (i+3)][i+3], plateau[ligne - (i+2)][i+2], plateau[ligne - (i+1)][i+1], plateau[ligne - i][i]]
+                listePion += [plateau[ligne + (i-3)][const.NB_COLUMNS - 1 - (i-3)],
+                              plateau[ligne + (i-2)][const.NB_COLUMNS - 1 - (i-2)],
+                              plateau[ligne + (i-1)][const.NB_COLUMNS - 1 - (i-1)],
+                              plateau[ligne + i][const.NB_COLUMNS - 1 - i]]
                 nbPionsAlignes = 0
-            i -= 1
+            i += 1
     return listePion
