@@ -96,7 +96,7 @@ def toStringPlateau(plateau: list)-> str:
                 plateauChaineCaractere += " "
             elif plateau[ligne][colonne][const.COULEUR] == const.ROUGE:
                 plateauChaineCaractere += "\x1B[41m \x1B[0m"
-            elif plateau[ligne][colonne][const.COULEUR] == const.JAUNE:
+            else:
                 plateauChaineCaractere += "\x1B[43m \x1B[0m"
         plateauChaineCaractere += "|\n"
     plateauChaineCaractere += "-" * (const.NB_COLUMNS * 2 + 1) + "\n"
@@ -132,7 +132,7 @@ def detecter4horizontalPlateau(plateau:list, couleur:int)-> list:
                 # Remise du compteur de pions alignés à 0
                 nbPionsAlignes = 0
             # Sinon, c'est un pion de la bonne couleur
-            elif plateau[ligne][colonne][const.COULEUR] == couleur:
+            else:
                 # On incrémente le compteur de pions alignés de 1
                 nbPionsAlignes += 1
             # Si on a 4 pions alignés
@@ -171,7 +171,7 @@ def detecter4verticalPlateau(plateau:list, couleur:int)-> list:
                 # Remise du compteur de pions alignés à 0
                 nbPionsAlignes = 0
             # Sinon, c'est un pion de la bonne couleur
-            elif plateau[ligne][colonne][const.COULEUR] == couleur:
+            else:
                 # On incrémente le compteur de pions alignés de 1
                 nbPionsAlignes += 1
             # Si on a 4 pions alignés
@@ -211,7 +211,7 @@ def detecter4diagonaleDirectePlateau(plateau:list, couleur:int)-> list:
                 # Remise du compteur de pions alignés à 0
                 nbPionsAlignes = 0
             # Sinon, c'est un pion de la bonne couleur
-            elif plateau[i][colonne + i][const.COULEUR] == couleur:
+            else:
                 # On incrémente le compteur de pions alignés de 1
                 nbPionsAlignes += 1
             # Si on a 4 pions alignés
@@ -231,7 +231,7 @@ def detecter4diagonaleDirectePlateau(plateau:list, couleur:int)-> list:
                 # Remise du compteur de pions alignés à 0
                 nbPionsAlignes = 0
             # Sinon, c'est un pion de la bonne couleur
-            elif plateau[ligne + i][i][const.COULEUR] == couleur:
+            else:
                 # On incrémente le compteur de pions alignés de 1
                 nbPionsAlignes += 1
             # Si on a 4 pions alignés
@@ -270,7 +270,7 @@ def detecter4diagonaleIndirectePlateau(plateau:list, couleur:int)-> list:
                 # Remise du compteur de pions alignés à 0
                 nbPionsAlignes = 0
             # Sinon, c'est un pion de la bonne couleur
-            elif plateau[i][colonne - i][const.COULEUR] == couleur:
+            else:
                 # On incrémente le compteur de pions alignés de 1
                 nbPionsAlignes += 1
             # Si on a 4 pions alignés
@@ -296,10 +296,26 @@ def detecter4diagonaleIndirectePlateau(plateau:list, couleur:int)-> list:
             # Si on a 4 pions alignés
             if nbPionsAlignes == 4:
                 # On ajoute ces 4 pions à la liste résultat, et on réinitialise le compteur
-                listePion += [plateau[ligne + (i-3)][const.NB_COLUMNS - 1 - (i-3)],
-                              plateau[ligne + (i-2)][const.NB_COLUMNS - 1 - (i-2)],
-                              plateau[ligne + (i-1)][const.NB_COLUMNS - 1 - (i-1)],
-                              plateau[ligne + i][const.NB_COLUMNS - 1 - i]]
+                listePion += [plateau[ligne + (i-3)][const.NB_COLUMNS - 1 - (i-3)], plateau[ligne + (i-2)][const.NB_COLUMNS - 1 - (i-2)],
+                              plateau[ligne + (i-1)][const.NB_COLUMNS - 1 - (i-1)], plateau[ligne + i][const.NB_COLUMNS - 1 - i]]
                 nbPionsAlignes = 0
             i += 1
     return listePion
+
+
+def getPionsGagnantsPlateau(plateau:list)-> list:
+    """
+    Récupérer les pions gagnants présents sur le plateau pour toutes les couleurs.
+    :param plateau: Le plateau à analyser
+    :return: La liste contenant tous les pions gagnants, une liste vide sinon
+    :raise TypeError: Si le paramètre n'est pas un plateau
+    """
+    if type_plateau(plateau) == False:
+        raise TypeError("getPionsGagnantsPlateau : Le paramètre n'est pas un plateau.")
+    listePionsGagnants = []
+    for couleur in const.COULEURS:
+        listePionsGagnants += detecter4verticalPlateau(plateau, couleur)
+        listePionsGagnants += detecter4horizontalPlateau(plateau, couleur)
+        listePionsGagnants += detecter4diagonaleIndirectePlateau(plateau, couleur)
+        listePionsGagnants += detecter4diagonaleDirectePlateau(plateau, couleur)
+    return listePionsGagnants
