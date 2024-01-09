@@ -340,3 +340,48 @@ def isRempliPlateau(plateau:list)-> bool:
             colonne += 1
         ligne += 1
     return res
+
+
+def placerPionLignePlateau(plateau : list, pion : dict, numLigne : int, left : bool) -> tuple:
+    if type_plateau(plateau) == False:
+        raise TypeError("placerPionLignePlateau : Le premier paramètre n’est pas un plateau.")
+    if type_pion(pion) == False:
+        raise TypeError("placerPionLignePlateau : Le second paramètre n'est pas un pion.")
+    if type(numLigne) != int:
+        raise TypeError("placerPionLignePlateau : Le troisième paramètre n'est pas un entier.")
+    if numLigne < 0 or numLigne > (const.NB_LINES - 1):
+        raise ValueError(f"placerPionLignePlateau : Le troisième paramètre {numLigne} ne désigne pas une ligne.")
+    if type(left) != bool:
+        raise TypeError("placerPionLignePlateau : Le quatrième paramètre n'est pas un booléen.")
+    listePionPousse = [pion]
+    # Si le pion est poussé par la gauche
+    if left == True:
+        i = 0
+        while i < (const.NB_COLUMNS) and plateau[numLigne][i] != None:
+            listePionPousse.append(plateau[numLigne][i])
+            i += 1
+
+        if numLigne < (const.NB_LINES - 1) and plateau[numLigne + 1][i] == None:
+            retour = const.NB_LINES - 1
+            while plateau[retour][i] != None:
+                retour -= 1
+            plateau[retour][i] = listePionPousse[len(listePionPousse)-1]
+            for j in range(0, i):
+                plateau[numLigne][j] = listePionPousse[j]
+        else :
+            if i == const.NB_COLUMNS:
+                i -= 1
+                retour = const.NB_LINES
+            else:
+                retour = None
+            for j in range(0, i + 1):
+                plateau[numLigne][j] = listePionPousse[j]
+        print(plateau)
+
+
+
+    # Sinon, le pion est poussé par la droite
+    else:
+        i = const.NB_LINES - 1
+            # listePionPousse = ... + listePionPousse
+    return listePionPousse, retour  # A CHANGER !!!
