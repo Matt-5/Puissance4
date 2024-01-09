@@ -72,3 +72,15 @@ def getPlateauJoueur(joueur : dict)->list:
     if type_joueur(joueur) == False:
         raise TypeError("getPlateauJoueur : Le paramètre ne correspond pas à un joueur.")
     return joueur[const.PLATEAU]
+
+
+def getPlacerPionJoueur(joueur : dict)-> callable:
+    """
+    Récupérer la fonction contenue dans le dictionnaire d'un joueur
+    :param joueur: Le joueur dont il faut récupérer la fonction
+    :return: La fonction récupérée
+    :raise TypeError: Si le paramètre n'est pas un joueur
+    """
+    if type_joueur(joueur) == False:
+        raise TypeError("getPlacerPionJoueur : Le paramètre ne correspond pas à un joueur.")
+    return joueur[const.PLACER_PION]
