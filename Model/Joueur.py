@@ -1,6 +1,7 @@
 from Model.Constantes import *
 from Model.Pion import *
 from Model.Plateau import *
+from random import randint
 
 
 
@@ -130,3 +131,10 @@ def setPlacerPionJoueur(joueur : dict, fonction : callable)-> None:
         raise TypeError("setPlacerPionJoueur : Le second paramètre n'est pas une fonction.")
     joueur[const.PLACER_PION] = fonction
     return None
+
+
+def _placerPionJoueur(joueur : dict)-> int:
+    nbAlea = randint(0, const.NB_COLUMNS - 1)
+    while joueur[const.PLATEAU][0][nbAlea] != None:
+        nbAlea = randint(0, const.NB_COLUMNS - 1)
+    return nbAlea
