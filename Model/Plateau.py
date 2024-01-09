@@ -319,3 +319,24 @@ def getPionsGagnantsPlateau(plateau:list)-> list:
         listePionsGagnants += detecter4diagonaleIndirectePlateau(plateau, couleur)
         listePionsGagnants += detecter4diagonaleDirectePlateau(plateau, couleur)
     return listePionsGagnants
+
+
+def isRempliPlateau(plateau:list)-> bool:
+    """
+    Déterminer si le plateau passé en paramètre est comlplètement rempli de pions.
+    :param plateau: Le plateau à analyser
+    :return: True si le plateau est intégralement rempli, False sinon
+    :raise TypeError: Si le paramètre n'est pas un plateau
+    """
+    if type_plateau(plateau) == False:
+        raise TypeError("isRempliPlateau : Le paramètre n’est pas un plateau.")
+    res = True
+    ligne = 0
+    while ligne < const.NB_LINES and res == True:
+        colonne = 0
+        while colonne < const.NB_COLUMNS and res == True:
+            if plateau[ligne][colonne] == None:
+                res = False
+            colonne += 1
+        ligne += 1
+    return res
