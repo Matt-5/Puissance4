@@ -419,3 +419,24 @@ def placerPionLignePlateau(plateau : list, pion : dict, numLigne : int, left : b
         for iPion in range(const.NB_COLUMNS - 1, numDernierPionADecaler, -1):
             plateau[numLigne][iPion] = listePionPousse[const.NB_COLUMNS - 1 - iPion]
     return listePionPousse, numLignePionRetour
+
+
+def encoderPlateau(plateau : list)-> str:
+    """
+    Retourner le plateau encodé sous forme de chaîne de caractère
+    :param plateau: Le plateau à encoder
+    :return: La chaîne de caractère contenant l'encodage du plateau
+    :raise TypeError: Si le paramètre n'est pas un plateau
+    """
+    if type_plateau(plateau) == False:
+        raise TypeError("encoderPlateau : Le paramètre ne correspond pas à un plateau.")
+    encodagePlateau = ""
+    for ligne in range(const.NB_LINES):
+        for colonne in range(const.NB_COLUMNS):
+            if plateau[ligne][colonne] == None:
+                encodagePlateau += "_"
+            elif plateau[ligne][colonne][const.COULEUR] == const.ROUGE:
+                encodagePlateau += "R"
+            else: # C'est une case contenant un pion jaune
+                encodagePlateau += "J"
+    return encodagePlateau
