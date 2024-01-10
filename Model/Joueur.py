@@ -175,3 +175,24 @@ def getModeEtenduJoueur(joueur : dict)-> bool:
     if const.MODE_ETENDU in joueur:
         retour = True
     return retour
+
+
+def setModeEtenduJoueur(joueur : dict, modeEtendu : bool = True)-> None:
+    """
+    Modifier un joueur en fonction de sa présence ou non en mode étendu
+    :param joueur: Le joueur à modifier
+    :param modeEtendu: Un booléen définissant si on doit ajouter ou supprimer la clé const.MODE_ETENDU
+    :return: Aucun
+    :raise TypeError : Si le premier paramètre n'est pas un joueur
+    :raise TypeError : Si le second paramètre n'est pas un booléen
+    """
+    if type_joueur(joueur) == False:
+        raise TypeError("setModeEtenduJoueur : Le premier paramètre ne correspond pas à un joueur.")
+    if type(modeEtendu) != bool:
+        raise TypeError("setModeEtenduJoueur : Le second paramètre ne correspond pas à un booléen.")
+    if modeEtendu == False:
+            if const.MODE_ETENDU in joueur:
+                del joueur[const.MODE_ETENDU]
+    else: # modeEtendu est à True
+        joueur[const.MODE_ETENDU] = True
+    return None
