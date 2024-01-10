@@ -140,8 +140,16 @@ def _placerPionJoueur(joueur : dict)-> int:
     :return: Aucun
     """
     nbAlea = randint(0, const.NB_COLUMNS - 1)
-    while joueur[const.PLATEAU][0][nbAlea] != None:
+    # Si l'on est pas en mode étendu
+    if const.MODE_ETENDU not in joueur:
         nbAlea = randint(0, const.NB_COLUMNS - 1)
+        while joueur[const.PLATEAU][0][nbAlea] != None:
+            nbAlea = randint(0, const.NB_COLUMNS - 1)
+    # Sinon, on est en mode étendu
+    else:
+        nbAlea = randint(-const.NB_LINES, const.NB_COLUMNS + const.NB_LINES - 1)
+        while (0 <= nbAlea and nbAlea < const.NB_COLUMNS) and (joueur[const.PLATEAU][0][nbAlea] != None):
+            nbAlea = randint(-const.NB_LINES, const.NB_COLUMNS + const.NB_LINES - 1)
     return nbAlea
 
 

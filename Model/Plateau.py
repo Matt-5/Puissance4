@@ -415,7 +415,6 @@ def placerPionLignePlateau(plateau : list, pion : dict, numLigne : int, left : b
             numDernierPionADecaler -= 1
         # On parcourt la liste des pions et on les décale tous sur le plateau
         # for iPion in range(0, numDernierPionADecaler):
-        print(const.NB_COLUMNS - 1, numDernierPionADecaler)
         for iPion in range(const.NB_COLUMNS - 1, numDernierPionADecaler, -1):
             plateau[numLigne][iPion] = listePionPousse[const.NB_COLUMNS - 1 - iPion]
     return listePionPousse, numLignePionRetour
