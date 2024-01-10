@@ -160,3 +160,18 @@ def initialiserIAJoueur(joueur : dict, premier : bool)-> None:
         raise TypeError("initialiserIAJoueur : Le second paramètre n'est pas un booléen.")
     setPlacerPionJoueur(joueur, _placerPionJoueur)
     return None
+
+
+def getModeEtenduJoueur(joueur : dict)-> bool:
+    """
+    Evaluer si un joueur est en mode étendu
+    :param joueur: Le joueur à évaluer
+    :return: True si on est en mode étendu, False sinon
+    :raise TypeError : Si le paramètre n'est pas un joueur
+    """
+    if type_joueur(joueur) == False:
+        raise TypeError("getModeEtenduJoueur : Le paramètre ne correspond pas à un joueur.")
+    retour = False
+    if const.MODE_ETENDU in joueur:
+        retour = True
+    return retour
