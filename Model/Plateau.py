@@ -440,3 +440,27 @@ def encoderPlateau(plateau : list)-> str:
             else: # C'est une case contenant un pion jaune
                 encodagePlateau += "J"
     return encodagePlateau
+
+
+def isPatPlateau(plateau : list, histogrammesPlateaux:dict)-> bool:
+    """
+    Evaluer si c'est la 5e fois que l'on rencontre le plateau
+    :param plateau: Le plateau à évaluer
+    :param histogrammesPlateaux: Un dictionnaire correspondant à "l'histogramme des plateaux"
+    :return: True si c'est la 5e fois que l'on rencontre le plateau, False sinon
+    :raise TypeError: Si le paramètre n'est pas un plateau
+    :raise TypeError: Si le paramètre n'est pas un dictionnaire
+    """
+    if type_plateau(plateau) == False:
+        raise TypeError("isPatPlateau : Le premier paramètre n'est pas un plateau.")
+    if type(histogrammesPlateaux) != dict:
+        raise TypeError("isPatPlateau : Le second paramètre n'est pas un dictionnaire.")
+    plateauEncode = encoderPlateau(plateau)
+    retour = False
+    if plateauEncode in histogrammesPlateaux:
+        histogrammesPlateaux[plateauEncode] += 1
+        if histogrammesPlateaux[plateauEncode] >= 5:
+            retour = True
+    else:
+        histogrammesPlateaux[plateauEncode] = 1
+    return retour
