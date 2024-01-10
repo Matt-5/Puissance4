@@ -343,6 +343,19 @@ def isRempliPlateau(plateau:list)-> bool:
 
 
 def placerPionLignePlateau(plateau : list, pion : dict, numLigne : int, left : bool) -> tuple:
+    """
+    Placer le pion dans le plateau dans la ligne définie
+    :param plateau: Le plateau dans lequel il faut placer le pion
+    :param pion: Le pion à placer
+    :param numLigne: Le numéro de la ligne dans laquelle il faut placer le pion
+    :param left: True si on pousse le pion par la gauche, False si on le pousse par la droite
+    :return: Un tuple constitué de la liste des pions poussés, et de l'indice de la ligne ou le dernier pion poussé se retrouve
+    :raise TypeError: Si le paramètre n'est pas un plateau
+    :raise TypeError: Si le paramètre n'est pas un pion
+    :raise TypeError: Si le paramètre n'est pas un entier
+    :raise ValueError: Si l'entier ne représente pas une ligne existante
+    :raise TypeError: Si le paramètre n'est pas un bouléen
+    """
     if type_plateau(plateau) == False:
         raise TypeError("placerPionLignePlateau : Le premier paramètre n’est pas un plateau.")
     if type_pion(pion) == False:
@@ -354,7 +367,6 @@ def placerPionLignePlateau(plateau : list, pion : dict, numLigne : int, left : b
     if type(left) != bool:
         raise TypeError("placerPionLignePlateau : Le quatrième paramètre n'est pas un booléen.")
     listePionPousse = [pion]
-
     numLignePionRetour = None
     # Si le pion est poussé par la gauche
     if left == True:
@@ -380,10 +392,9 @@ def placerPionLignePlateau(plateau : list, pion : dict, numLigne : int, left : b
         # On parcourt la liste des pions et on les décale tous sur le plateau
         for iPion in range(0, numDernierPionADecaler):
             plateau[numLigne][iPion] = listePionPousse[iPion]
-
     # Sinon, le pion est poussé par la droite
     else:
-        numDernierPionADecaler = const.NB_LINES - 1
+        numDernierPionADecaler = const.NB_COLUMNS - 1
         # On parcourt la ligne pour voir jusqu'où on pousse les pions
         while numDernierPionADecaler >= 0 and plateau[numLigne][numDernierPionADecaler] != None:
             listePionPousse.append(plateau[numLigne][numDernierPionADecaler])
@@ -395,7 +406,7 @@ def placerPionLignePlateau(plateau : list, pion : dict, numLigne : int, left : b
         elif numLigne < (const.NB_LINES - 1) and plateau[numLigne + 1][numDernierPionADecaler] == None:
             numLignePionRetour = const.NB_LINES - 1
             while plateau[numLignePionRetour][numDernierPionADecaler] != None:
-                numLignePionRetour += 1
+                numLignePionRetour -= 1
             plateau[numLignePionRetour][numDernierPionADecaler] = listePionPousse[len(listePionPousse)-1]
         # Dans les 2 cas ci-dessus, le dernier pion de la liste n'était pas traité dans le déplacement
         # car il était supprimé par remplacement, ou positionné sur une ligne plus basse
@@ -404,8 +415,7 @@ def placerPionLignePlateau(plateau : list, pion : dict, numLigne : int, left : b
             numDernierPionADecaler -= 1
         # On parcourt la liste des pions et on les décale tous sur le plateau
         # for iPion in range(0, numDernierPionADecaler):
+        print(const.NB_COLUMNS - 1, numDernierPionADecaler)
         for iPion in range(const.NB_COLUMNS - 1, numDernierPionADecaler, -1):
-            #plateau[numLigne][iPion] = listePionPousse[len(listePionPousse) - 1 - iPion]
-            plateau[numLigne][iPion] = "A"
-            print(plateau)
+            plateau[numLigne][iPion] = listePionPousse[const.NB_COLUMNS - 1 - iPion]
     return listePionPousse, numLignePionRetour
