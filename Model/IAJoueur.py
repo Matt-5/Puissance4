@@ -1,72 +1,74 @@
 from Model.Constantes import *
 
-def evaluerPosition(plateau:list)->list:
+
+def evaluerPosition(plateau: list, couleurPion: int) -> list:
     matricePossibilites = []
     for ligne in range(const.NB_LINES):
         nouvelleLigne = []
-        for colonne in range (const.NB_COLUMNS):
-            nouvelleLigne.append(evaluerPositionDiagonaleDirecte(ligne, colonne, 1))
+        for colonne in range(const.NB_COLUMNS):
+            nouvelleLigne.append(evaluerPositionLigne(plateau, ligne, colonne, couleurPion)
+                                 + evaluerPositionColonne(plateau, ligne, colonne, couleurPion)
+                                 + evaluerPositionDiagonaleDirecte(plateau, ligne, colonne, couleurPion)
+                                 + evaluerPositionDiagonaleIndirecte(plateau, ligne, colonne, couleurPion))
         matricePossibilites.append(nouvelleLigne)
     return matricePossibilites
 
 
-def evaluerPositionLigne(indiceLigne:int, indiceColonne:int, couleurPion:int)->int:
+def evaluerPositionLigne(plateau: list, indiceLigne: int, indiceColonne: int, couleurPion: int) -> int:
     nbPossibilites = 0
     for i in range(const.NB_COLUMNS-3):
-        if i <= indiceColonne and indiceColonne <= (i + 3):
+        if (i <= indiceColonne) and (indiceColonne <= (i + 3)):
             possible = True
             for k in range(i, i+4):
-                if plateau[indiceLigne][k] == None or plateau[indiceLigne][k] != couleurPion:
+                if plateau[indiceLigne][k] is not None and plateau[indiceLigne][k][const.COULEUR] != couleurPion:
                     possible = False
             if possible:
                 nbPossibilites += 1
     return nbPossibilites
 
 
-def evaluerPositionColonne(indiceLigne:int, indiceColonne:int, couleurPion:int)->int:
+def evaluerPositionColonne(plateau: list, indiceLigne: int, indiceColonne: int, couleurPion: int) -> int:
     nbPossibilites = 0
     for i in range(const.NB_LINES-3):
-        if i <= indiceLigne and indiceLigne <= (i + 3):
+        if (i <= indiceLigne) and (indiceLigne <= (i + 3)):
             possible = True
             for k in range(i, i+4):
-                if plateau[k][indiceColonne] == None or plateau[k][indiceColonne] != couleurPion:
+                if plateau[k][indiceColonne] is not None and plateau[k][indiceColonne][const.COULEUR] != couleurPion:
                     possible = False
             if possible:
                 nbPossibilites += 1
     return nbPossibilites
 
 
-def evaluerPositionDiagonaleDirecte(indiceLigne:int, indiceColonne:int, couleurPion:int)->int:
+def evaluerPositionDiagonaleDirecte(plateau: list, indiceLigne: int, indiceColonne: int, couleurPion: int) -> int:
     nbPossibilites = 0
-    for i in range(const.NB_LINES-4):
-        for j in range(const.NB_COLUMNS-4):
-            if (i <= indiceLigne and indiceLigne <= (min(i + 3, const.NB_LINES))) and (j <= indiceColonne and indiceColonne <= (min(j + 3, const.NB_COLUMNS))):
-                possible = True
-                for k in range(i, i+4):
-                    if plateau[i + k][j + k] == None or plateau[i + k][i + k] != couleurPion:
-                        possible = False
-                if possible:
-                    nbPossibilites += 1
+    couplesPossibles = []
+    for i in range(const.NB_LINES-3):
+        for j in range(const.NB_COLUMNS-3):
+            possible = True
+            for k in range(4):
+                if plateau[i+k][j+k] is not None and plateau[i + k][j + k][const.COULEUR] != couleurPion:
+                    possible = False
+            if possible:
+                couplesPossibles.append([(i, j), (i+1, j+1), (i+2, j+2), (i+3, j+3)])
+    for diagonale in couplesPossibles:
+        if (indiceLigne, indiceColonne) in diagonale:
+            nbPossibilites += 1
     return nbPossibilites
 
 
-def evaluerPositionDiagonaleIndirecte(indiceLigne:int, indiceColonne:int, couleurPion:int)->int:
+def evaluerPositionDiagonaleIndirecte(plateau: list, indiceLigne: int, indiceColonne: int, couleurPion: int) -> int:
     nbPossibilites = 0
-    for i in range(const.NB_LINES-4):
+    couplesPossibles = []
+    for i in range(const.NB_LINES - 3):
         for j in range(3, const.NB_COLUMNS):
-            if (i <= indiceLigne and indiceLigne <= (i + 3)) and (j <= indiceColonne and indiceColonne <= (j + 3)):
-                possible = True
-                for k in range(i, i+4):
-                    if plateau[i + k][j - k] == None or plateau[i + k][i - k] != couleurPion:
-                        possible = False
-                if possible:
-                    nbPossibilites += 1
+            possible = True
+            for k in range(0, 4):
+                if plateau[i + k][j - k] is not None and plateau[i + k][j - k][const.COULEUR] != couleurPion:
+                    possible = False
+            if possible:
+                couplesPossibles.append([(i, j), (i+1, j-1), (i+2, j-2), (i+3, j-3)])
+    for diagonale in couplesPossibles:
+        if (indiceLigne, indiceColonne) in diagonale:
+            nbPossibilites += 1
     return nbPossibilites
-
-plateau= [[1, 1, 1, 1, 1, 1, 1],
-          [1, 1, 1, 1, 1, 1, 1],
-          [1, 1, 1, 1, 1, 1, 1],
-          [1, 1, 1, 1, 1, 1, 1],
-          [1, 1, 1, 1, 1, 1, 1],
-          [1, 1, 1, 1, 1, 1, 1]]
-print(evaluerPosition(plateau))
