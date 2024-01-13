@@ -23,22 +23,23 @@ def type_plateau(plateau: list) -> bool:
     :param plateau: Objet qu'on veut tester
     :return: True s'il correspond à un plateau, False sinon
     """
-    if type(plateau) != list:
+    if type(plateau) is not list:
         return False
     if len(plateau) != const.NB_LINES:
         return False
     wrong = "Erreur !"
-    if next((wrong for line in plateau if type(line) != list or len(line) != const.NB_COLUMNS), True) == wrong:
+    if next((wrong for line in plateau if type(line) is not list or len(line) != const.NB_COLUMNS), True) == wrong:
         return False
-    if next((wrong for line in plateau for c in line if not(c is None) and not type_pion(c)), True) == wrong:
+    if next((wrong for line in plateau for c in line if not (c is None) and not type_pion(c)), True) == wrong:
         return False
     return True
 
 
-def construirePlateau()-> list:
+def construirePlateau() -> list:
     """
-    Fonction permettant de construire un plateau
-    :return: Tableau 2D représentant un plateau
+    Permet de construire un plateau
+
+    :return: Liste de listes représentant un plateau
     """
     plateau = []
     for ligne in range(const.NB_LINES):
@@ -49,86 +50,92 @@ def construirePlateau()-> list:
     return plateau
 
 
-def placerPionPlateau(plateau:list, pion:dict, numeroColonne:int)-> int:
+def placerPionPlateau(plateau: list, pion: dict, numeroColonne: int) -> int:
     """
-    Placer le pion dans le plateau dans la colonne définie
-    :param plateau: Le pion dans lequel on souhaite placer le pion
-    :param pion: Le pion à placer dans le plateau
-    :param numeroColonne: Le numéro de la colonne dans laquelle on souhaite placer le pion
-    :return: Le numéro de la ligne dans laquelle on place le pion, -1 si on en peut pas le placer
-    :raise TypeError: Si le paramètre n'est pas un plateau
-    :raise TypeError: Si le paramètre n'est pas un pion
-    :raise TypeError: Si le paramètre n'est pas un entier
+    Place le pion dans le plateau dans la colonne définie
+
+    :param plateau: Plateau dans lequel on souhaite placer le pion
+    :param pion: Pion à placer dans le plateau
+    :param numeroColonne: Entier représentant le numéro de la colonne dans laquelle on souhaite placer le pion
+    :return: Entier représentant le numéro de la ligne dans laquelle on place le pion, -1 si on ne peut pas le placer
+    :raise TypeError: Si le premier paramètre n'est pas un plateau
+    :raise TypeError: Si le deuxième paramètre n'est pas un pion
+    :raise TypeError: Si le troisième paramètre n'est pas un entier
     :raise ValueError: Si l'entier ne représente pas une colonne existante
     """
-    if type_plateau(plateau) == False:
+    if not type_plateau(plateau):
         raise TypeError("placerPionPlateau : Le premier paramaètre ne correspond pas à un plateau.")
-    if type_pion(pion) == False:
+    if not type_pion(pion):
         raise TypeError("placerPionPlateau : Le second paramètre n'est pas un pion.")
-    if type(numeroColonne) != int:
+    if type(numeroColonne) is not int:
         raise TypeError("placerPionPlateau : Le troisième paramètre n'est pas un entier.")
     if numeroColonne < 0 or numeroColonne >= const.NB_COLUMNS:
         raise ValueError(f"placerPionPlateau : La valeur de la colonne {numeroColonne} n'est pas correcte.")
-    if plateau[const.NB_LINES - 1][numeroColonne] == None:
+    # Si la dernière case de la colonne choisie est vide, on affecte directement le pion
+    if plateau[const.NB_LINES - 1][numeroColonne] is None:
         plateau[const.NB_LINES - 1][numeroColonne] = pion
         numLignePion = const.NB_LINES - 1
-    elif plateau[0][numeroColonne] != None:
+    # Sinon si la première case de la colonne choisie est remplie, on ne peut pas placer de pion dans la colonne
+    elif plateau[0][numeroColonne] is not None:
         numLignePion = -1
+    # Sinon, il faut parcourir la colonne de bas en haut pour trouver la place adéquate pour le pion
     else:
-        numLignePion = const.NB_LINES - 2
-        while numLignePion >= 0 and plateau[numLignePion][numeroColonne] != None:
+        numLignePion = const.NB_LINES - 2  # -2 car on ne reteste pas la dernière case de la colonne
+        while numLignePion >= 0 and plateau[numLignePion][numeroColonne] is not None:
             numLignePion -= 1
         plateau[numLignePion][numeroColonne] = pion
     return numLignePion
 
 
-def toStringPlateau(plateau: list)-> str:
+def toStringPlateau(plateau: list) -> str:
     """
-    Afficher le plateau sous forme de chaîne de caractères
-    :param plateau: Le plateau à afficher
-    :return: La chaîne de caractères contenant l'affichage de plateau
+    Transforme le plateau en une chaîne de caractères pour l'afficher visuellement
+
+    :param plateau: Plateau à afficher
+    :return: Chaîne de caractères contenant le plateau
     """
     plateauChaineCaractere = ""
     for ligne in range(const.NB_LINES):
         for colonne in range(const.NB_COLUMNS):
             plateauChaineCaractere += "|"
-            if plateau[ligne][colonne] == None:
+            if plateau[ligne][colonne] is None:
                 plateauChaineCaractere += " "
             elif plateau[ligne][colonne][const.COULEUR] == const.ROUGE:
                 plateauChaineCaractere += "\x1B[41m \x1B[0m"
-            else:
+            else:  # Il y a un pion qui n'est pas rouge, il est donc jaune
                 plateauChaineCaractere += "\x1B[43m \x1B[0m"
         plateauChaineCaractere += "|\n"
+    # Ajout par rapport au plateau au format 2D : numérotation des colonnes :
     plateauChaineCaractere += "-" * (const.NB_COLUMNS * 2 + 1) + "\n"
     for i in range(const.NB_COLUMNS):
         plateauChaineCaractere += " " + str(i)
     return plateauChaineCaractere
 
 
-def detecter4horizontalPlateau(plateau:list, couleur:int)-> list:
+def detecter4horizontalPlateau(plateau: list, couleur: int) -> list:
     """
-    Lister les pions de la couleur choisie qui sont alignés par 4 horizontalement
-    :param plateau: Le plateau à analyser
-    :param couleur: La couleur pour laquelle on souhaite chercher des pions alignés horizontalement
-    :return: La liste des pions de la couleur choisie qui sont alignés par 4, une liste vide s'il n'y en a pas
-    :raise TypeError: Si le paramètre n'est pas un plateau
-    :raise TypeError: Si le paramètre n'est pas un entier
+    Liste les pions de la couleur choisie alignés par 4 horizontalement
+
+    :param plateau: Plateau à analyser
+    :param couleur: Couleur pour laquelle on cherche des pions alignés horizontalement
+    :return: Liste des pions de la couleur choisie alignés par 4, une liste vide s'il n'y en a aucun
+    :raise TypeError: Si le premier paramètre n'est pas un plateau
+    :raise TypeError: Si le second paramètre n'est pas un entier
     :raise ValueError: Si l'entier ne représente pas une couleur
     """
-    if type_plateau(plateau) == False:
+    if not type_plateau(plateau):
         raise TypeError("detecter4horizontalPlateau : Le premier paramètre ne correspond pas à un plateau.")
-    if type(couleur) != int:
+    if type(couleur) is not int:
         raise TypeError("detecter4horizontalPlateau : Le second paramètre n'est pas un entier.")
     if couleur not in const.COULEURS:
         raise ValueError("detecter4horizontalPlateau : La valeur de la couleur {couleur} n'est pas correcte.")
     listePion = []
     for ligne in range(const.NB_LINES):
-        colonne = 0
         # Nouvelle ligne : réinitialisation du compteur de pions alignés
         nbPionsAlignes = 0
-        while colonne < const.NB_COLUMNS:
+        for colonne in range(const.NB_COLUMNS):
             # Si on n'est pas sur un pion, ou que ce n'est pas un pion de la bonne couleur
-            if plateau[ligne][colonne] == None or plateau[ligne][colonne][const.COULEUR] != couleur:
+            if plateau[ligne][colonne] is None or plateau[ligne][colonne][const.COULEUR] != couleur:
                 # Remise du compteur de pions alignés à 0
                 nbPionsAlignes = 0
             # Sinon, c'est un pion de la bonne couleur
@@ -138,36 +145,36 @@ def detecter4horizontalPlateau(plateau:list, couleur:int)-> list:
             # Si on a 4 pions alignés
             if nbPionsAlignes == 4:
                 # On ajoute ces 4 pions à la liste résultat, et on réinitialise le compteur
-                listePion += [plateau[ligne][colonne-3], plateau[ligne][colonne-2], plateau[ligne][colonne-1], plateau[ligne][colonne]]
+                listePion += [plateau[ligne][colonne-3], plateau[ligne][colonne-2],
+                              plateau[ligne][colonne-1], plateau[ligne][colonne]]
                 nbPionsAlignes = 0
-            colonne += 1
     return listePion
 
 
-def detecter4verticalPlateau(plateau:list, couleur:int)-> list:
+def detecter4verticalPlateau(plateau: list, couleur: int) -> list:
     """
-    Lister les pions de la couleur choisie qui sont alignés par 4 verticalement
-    :param plateau: Le plateau à analyser
-    :param couleur: La couleur pour laquelle on souhaite chercher des pions alignés verticalement
-    :return: La liste des pions de la couleur choisie qui sont alignés par 4, une liste vide s'il n'y en a pas
-    :raise TypeError: Si le paramètre n'est pas un plateau
-    :raise TypeError: Si le paramètre n'est pas un entier
+    Liste les pions de la couleur choisie alignés par 4 verticalement
+
+    :param plateau: Plateau à analyser
+    :param couleur: Couleur pour laquelle on cherche des pions alignés verticalement
+    :return: Liste des pions de la couleur choisie alignés par 4, une liste vide s'il n'y en a aucun
+    :raise TypeError: Si le premier paramètre n'est pas un plateau
+    :raise TypeError: Si le second paramètre n'est pas un entier
     :raise ValueError: Si l'entier ne représente pas une couleur
     """
-    if type_plateau(plateau) == False:
+    if not type_plateau(plateau):
         raise TypeError("detecter4verticalPlateau : Le premier paramètre ne correspond pas à un plateau.")
-    if type(couleur) != int:
+    if type(couleur) is not int:
         raise TypeError("detecter4verticalPlateau : Le second paramètre n'est pas un entier.")
     if couleur not in const.COULEURS:
         raise ValueError("detecter4verticalPlateau : La valeur de la couleur {couleur} n'est pas correcte.")
     listePion = []
     for colonne in range(const.NB_COLUMNS):
-        ligne = const.NB_LINES - 1
         # Nouvelle colonne : réinitialisation du compteur de pions alignés
         nbPionsAlignes = 0
-        while ligne >= 0:
+        for ligne in range(const.NB_LINES):
             # Si on n'est pas sur un pion, ou que ce n'est pas un pion de la bonne couleur
-            if plateau[ligne][colonne] == None or plateau[ligne][colonne][const.COULEUR] != couleur:
+            if plateau[ligne][colonne] is None or plateau[ligne][colonne][const.COULEUR] != couleur:
                 # Remise du compteur de pions alignés à 0
                 nbPionsAlignes = 0
             # Sinon, c'est un pion de la bonne couleur
@@ -177,142 +184,95 @@ def detecter4verticalPlateau(plateau:list, couleur:int)-> list:
             # Si on a 4 pions alignés
             if nbPionsAlignes == 4:
                 # On ajoute ces 4 pions à la liste résultat, et on réinitialise le compteur
-                listePion += [plateau[ligne+3][colonne], plateau[ligne+2][colonne], plateau[ligne+1][colonne], plateau[ligne][colonne]]
+                listePion += [plateau[ligne-3][colonne], plateau[ligne-2][colonne],
+                              plateau[ligne-1][colonne], plateau[ligne][colonne]]
                 nbPionsAlignes = 0
-            ligne -= 1
     return listePion
 
 
-def detecter4diagonaleDirectePlateau(plateau:list, couleur:int)-> list:
+def detecter4diagonaleDirectePlateau(plateau: list, couleur: int) -> list:
     """
-    Lister les pions de la couleur choisie qui sont alignés par 4 sur la diagonale directe
-    :param plateau: Le plateau à analyser
-    :param couleur: La couleur pour laquelle on souhaite chercher des pions alignés sur le diagonale directe
-    :return: La liste des pions de la couleur choisie qui sont alignés par 4, une liste vide s'il n'y en a pas
-    :raise TypeError: Si le paramètre n'est pas un plateau
-    :raise TypeError: Si le paramètre n'est pas un entier
+    Liste les pions de la couleur choisie alignés par 4 sur la diagonale directe
+
+    :param plateau: Plateau à analyser
+    :param couleur: Couleur pour laquelle on cherche des pions alignés sur la diagonale directe
+    :return: Liste des pions de la couleur choisie alignés par 4, une liste vide s'il n'y en a aucun
+    :raise TypeError: Si le premier paramètre n'est pas un plateau
+    :raise TypeError: Si le second paramètre n'est pas un entier
     :raise ValueError: Si l'entier ne représente pas une couleur
     """
-    if type_plateau(plateau) == False:
+    if not type_plateau(plateau):
         raise TypeError("detecter4diagonaleDirectePlateau : Le premier paramètre ne correspond pas à un plateau.")
-    if type(couleur) != int:
+    if type(couleur) is not int:
         raise TypeError("detecter4diagonaleDirectePlateau : Le second paramètre n'est pas un entier.")
     if couleur not in const.COULEURS:
         raise ValueError("detecter4diagonaleDirectePlateau : La valeur de la couleur {couleur} n'est pas correcte.")
     listePion = []
-    # Parcours de la diagonale directe centrale, et de celles situées au-dessus
-    for colonne in range(const.NB_COLUMNS - 4, -1, -1):
-        i = 0
-        # Nouvelle diagonale : réinitialisation du compteur de pions alignés
-        nbPionsAlignes = 0
-        while i < (const.NB_LINES) and (colonne + i) < const.NB_COLUMNS:
-            # Si on n'est pas sur un pion, ou que ce n'est pas un pion de la bonne couleur
-            if plateau[i][colonne + i] == None or plateau[i][colonne + i][const.COULEUR] != couleur:
-                # Remise du compteur de pions alignés à 0
-                nbPionsAlignes = 0
-            # Sinon, c'est un pion de la bonne couleur
-            else:
-                # On incrémente le compteur de pions alignés de 1
-                nbPionsAlignes += 1
-            # Si on a 4 pions alignés
-            if nbPionsAlignes == 4:
-                # On ajoute ces 4 pions à la liste résultat, et on réinitialise le compteur
-                listePion += [plateau[i-3][colonne + (i-3)], plateau[i-2][colonne + (i-2)], plateau[i-1][colonne + (i-1)], plateau[i][colonne + i]]
-                nbPionsAlignes = 0
-            i += 1
-    # Parcours des diagonales directes situées sous la diagonale centrale (qui est exclue du parcours)
-    for ligne in range(1, const.NB_LINES - 3):
-        i = 0
-        # Nouvelle diagonale : réinitialisation du compteur de pions alignés
-        nbPionsAlignes = 0
-        while i < (const.NB_COLUMNS) and (ligne + i) < const.NB_LINES:
-            # Si on n'est pas sur un pion, ou que ce n'est pas un pion de la bonne couleur
-            if plateau[ligne + i][i] == None or plateau[ligne + i][i][const.COULEUR] != couleur:
-                # Remise du compteur de pions alignés à 0
-                nbPionsAlignes = 0
-            # Sinon, c'est un pion de la bonne couleur
-            else:
-                # On incrémente le compteur de pions alignés de 1
-                nbPionsAlignes += 1
-            # Si on a 4 pions alignés
-            if nbPionsAlignes == 4:
-                # On ajoute ces 4 pions à la liste résultat, et on réinitialise le compteur
-                listePion += [plateau[ligne + (i-3)][i-3], plateau[ligne + (i-2)][i-2], plateau[ligne + (i-1)][i-1], plateau[ligne + i][i]]
-                nbPionsAlignes = 0
-            i += 1
+    # Une diagonale possible ne commence jamais dans les 3 dernières colonnes, ni dans les 3 dernières lignes
+    # On parcourt donc toutes les cases de début possibles
+    for ligne in range(const.NB_LINES-3):
+        for colonne in range(const.NB_COLUMNS-3):
+            possible = True
+            # Pour chaque case de début, on parcourt la diagonale qui en découle
+            for k in range(4):
+                # Si une des cases est vide ou n'est pas de la couleur du pion choisi, elle est forcément perdue
+                if plateau[ligne+k][colonne+k] is None or plateau[ligne + k][colonne + k][const.COULEUR] != couleur:
+                    possible = False
+            # Si la diagonale est gagnée, on l'ajoute au résultat !
+            if possible:
+                listePion += [plateau[ligne][colonne], plateau[ligne+1][colonne+1],
+                              plateau[ligne+2][colonne+2], plateau[ligne+3][colonne+3]]
     return listePion
 
-def detecter4diagonaleIndirectePlateau(plateau:list, couleur:int)-> list:
+
+def detecter4diagonaleIndirectePlateau(plateau: list, couleur: int) -> list:
     """
-    Lister les pions de la couleur choisie qui sont alignés par 4 sur la diagonale indirecte
-    :param plateau: Le plateau à analyser
-    :param couleur: La couleur pour laquelle on souhaite chercher des pions alignés sur le diagonale indirecte
-    :return: La liste des pions de la couleur choisie qui sont alignés par 4, une liste vide s'il n'y en a pas
-    :raise TypeError: Si le paramètre n'est pas un plateau
-    :raise TypeError: Si le paramètre n'est pas un entier
+    Liste les pions de la couleur choisie alignés par 4 sur la diagonale indirecte
+
+    :param plateau: Plateau à analyser
+    :param couleur: Couleur pour laquelle on cherche des pions alignés sur la diagonale indirecte
+    :return: Liste des pions de la couleur choisie alignés par 4, une liste vide s'il n'y en a aucun
+    :raise TypeError: Si le premier paramètre n'est pas un plateau
+    :raise TypeError: Si le second paramètre n'est pas un entier
     :raise ValueError: Si l'entier ne représente pas une couleur
     """
-    if type_plateau(plateau) == False:
+    if not type_plateau(plateau):
         raise TypeError("detecter4diagonaleIndirectePlateau : Le premier paramètre ne correspond pas à un plateau.")
-    if type(couleur) != int:
+    if type(couleur) is not int:
         raise TypeError("detecter4diagonaleIndirectePlateau : Le second paramètre n'est pas un entier.")
     if couleur not in const.COULEURS:
         raise ValueError("detecter4diagonaleIndirectePlateau : La valeur de la couleur {couleur} n'est pas correcte.")
     listePion = []
-    # Parcours de la diagonale indirecte centrale et de celles situées au-dessus
-    for colonne in range(3, const.NB_COLUMNS):
-        i = 0
-        # Nouvelle diagonale : réinitialisation du compteur de pions alignés
-        nbPionsAlignes = 0
-        while i < (const.NB_LINES) and (colonne - i) >= 0:
-            # Si on n'est pas sur un pion, ou que ce n'est pas un pion de la bonne couleur
-            if plateau[i][colonne - i] == None or plateau[i][colonne - i][const.COULEUR] != couleur:
-                # Remise du compteur de pions alignés à 0
-                nbPionsAlignes = 0
-            # Sinon, c'est un pion de la bonne couleur
-            else:
-                # On incrémente le compteur de pions alignés de 1
-                nbPionsAlignes += 1
-            # Si on a 4 pions alignés
-            if nbPionsAlignes == 4:
-                # On ajoute ces 4 pions à la liste résultat, et on réinitialise le compteur
-                listePion += [plateau[i-3][colonne - (i-3)], plateau[i-2][colonne - (i-2)], plateau[i-1][colonne - (i-1)], plateau[i][colonne - i]]
-                nbPionsAlignes = 0
-            i += 1
-    # Parcours des diagonales indirectes situées sous la diagonale indirecte centrale (qui est exclue)
-    for ligne in range(1, const.NB_LINES - 3):
-        i = 0
-        # Nouvelle diagonale : réinitialisation du compteur de pions alignés
-        nbPionsAlignes = 0
-        while 0 <= (const.NB_COLUMNS - 1 - i) and (ligne + i) < const.NB_LINES:
-            # Si on n'est pas sur un pion, ou que ce n'est pas un pion de la bonne couleur
-            if plateau[ligne + i][const.NB_COLUMNS - 1 - i] == None or plateau[ligne + i][const.NB_COLUMNS - 1 - i][const.COULEUR] != couleur:
-                # Remise du compteur de pions alignés à 0
-                nbPionsAlignes = 0
-            # Sinon, c'est un pion de la bonne couleur
-            else:
-                # On incrémente le compteur de pions alignés de 1
-                nbPionsAlignes += 1
-            # Si on a 4 pions alignés
-            if nbPionsAlignes == 4:
-                # On ajoute ces 4 pions à la liste résultat, et on réinitialise le compteur
-                listePion += [plateau[ligne + (i-3)][const.NB_COLUMNS - 1 - (i-3)], plateau[ligne + (i-2)][const.NB_COLUMNS - 1 - (i-2)],
-                              plateau[ligne + (i-1)][const.NB_COLUMNS - 1 - (i-1)], plateau[ligne + i][const.NB_COLUMNS - 1 - i]]
-                nbPionsAlignes = 0
-            i += 1
+    # Une anti-diagonale possible ne commence jamais dans les 3 premières colonnes, ni dans les 3 dernières lignes
+    # On parcourt donc toutes les cases de début possibles
+    for ligne in range(const.NB_LINES - 3):
+        for colonne in range(3, const.NB_COLUMNS):
+            possible = True
+            # Pour chaque case de début, on parcourt l'anti-diagonale qui en découle
+            for k in range(0, 4):
+                # Si une des cases est vide ou n'est pas de la couleur du pion choisi, elle est forcément perdue
+                if plateau[ligne+k][colonne-k] is None or plateau[ligne+k][colonne-k][const.COULEUR] != couleur:
+                    possible = False
+            # Si l'anti-diagonale est gagnée, on l'ajoute au résultat !
+            if possible:
+                listePion += [plateau[ligne][colonne], plateau[ligne+1][colonne-1],
+                              plateau[ligne+2][colonne-2], plateau[ligne+3][colonne-3]]
     return listePion
 
 
-def getPionsGagnantsPlateau(plateau:list)-> list:
+def getPionsGagnantsPlateau(plateau: list) -> list:
     """
-    Récupérer les pions gagnants présents sur le plateau pour toutes les couleurs.
-    :param plateau: Le plateau à analyser
-    :return: La liste contenant tous les pions gagnants, une liste vide sinon
+    Récupère les pions gagnants présents sur le plateau pour toutes les couleurs
+
+    :param plateau: Plateau à analyser
+    :return: Liste contenant tous les pions gagnants, une liste vide s'il n'y en a aucun
     :raise TypeError: Si le paramètre n'est pas un plateau
     """
-    if type_plateau(plateau) == False:
+    if not type_plateau(plateau):
         raise TypeError("getPionsGagnantsPlateau : Le paramètre n'est pas un plateau.")
+    # IMPORTANT : On ne fait pas une liste par couleur, mais une liste dans laquelle on met toutes les couleurs
     listePionsGagnants = []
+    # On mène les 4 analyses (horizontal, vertical, diagonale, diagonale indirecte) pour chaque couleur
     for couleur in const.COULEURS:
         listePionsGagnants += detecter4verticalPlateau(plateau, couleur)
         listePionsGagnants += detecter4horizontalPlateau(plateau, couleur)
@@ -321,72 +281,74 @@ def getPionsGagnantsPlateau(plateau:list)-> list:
     return listePionsGagnants
 
 
-def isRempliPlateau(plateau:list)-> bool:
+def isRempliPlateau(plateau: list) -> bool:
     """
-    Déterminer si le plateau passé en paramètre est comlplètement rempli de pions.
-    :param plateau: Le plateau à analyser
+    Détermine si le plateau passé en paramètre est complètement rempli de pions
+
+    :param plateau: Plateau à analyser
     :return: True si le plateau est intégralement rempli, False sinon
     :raise TypeError: Si le paramètre n'est pas un plateau
     """
-    if type_plateau(plateau) == False:
+    if not type_plateau(plateau):
         raise TypeError("isRempliPlateau : Le paramètre n’est pas un plateau.")
     res = True
-    ligne = 0
-    while ligne < const.NB_LINES and res == True:
-        colonne = 0
-        while colonne < const.NB_COLUMNS and res == True:
-            if plateau[ligne][colonne] == None:
-                res = False
-            colonne += 1
-        ligne += 1
+    # Ici, il n'est pas utile de parcourir toutes les lignes : si le plateau n'est pas intégralement rempli,
+    # les cases qui sont vides sont forcément le plus haut possible, et donc au moins sur la 1ère ligne
+    colonne = 0
+    while (colonne < const.NB_COLUMNS) and (res is True):
+        if plateau[0][colonne] is None:
+            res = False
+        colonne += 1
     return res
 
 
-def placerPionLignePlateau(plateau : list, pion : dict, numLigne : int, left : bool) -> tuple:
+def placerPionLignePlateau(plateau: list, pion: dict, numLigne: int, left: bool) -> tuple:
     """
-    Placer le pion dans le plateau dans la ligne définie
-    :param plateau: Le plateau dans lequel il faut placer le pion
-    :param pion: Le pion à placer
-    :param numLigne: Le numéro de la ligne dans laquelle il faut placer le pion
-    :param left: True si on pousse le pion par la gauche, False si on le pousse par la droite
-    :return: Un tuple constitué de la liste des pions poussés, et de l'indice de la ligne ou le dernier pion poussé se retrouve
-    :raise TypeError: Si le paramètre n'est pas un plateau
-    :raise TypeError: Si le paramètre n'est pas un pion
-    :raise TypeError: Si le paramètre n'est pas un entier
+    Place le pion dans le plateau dans la ligne définie
+
+    :param plateau: Plateau dans lequel il faut placer le pion
+    :param pion: Pion à placer dans le plateau
+    :param numLigne: Entier représentant le numéro de la ligne dans laquelle on souhaite placer le pion
+    :param left: Booléen à True si on pousse le pion par la gauche, False si on le pousse par la droite
+    :return: Un tuple de la liste des pions poussés, et de l'indice de la ligne où le dernier pion poussé se retrouve
+    :raise TypeError: Si le premier paramètre n'est pas un plateau
+    :raise TypeError: Si le deuxième paramètre n'est pas un pion
+    :raise TypeError: Si le troisième paramètre n'est pas un entier
     :raise ValueError: Si l'entier ne représente pas une ligne existante
-    :raise TypeError: Si le paramètre n'est pas un bouléen
+    :raise TypeError: Si le quatrième paramètre n'est pas un bouléen
     """
-    if type_plateau(plateau) == False:
+    if not type_plateau(plateau):
         raise TypeError("placerPionLignePlateau : Le premier paramètre n’est pas un plateau.")
-    if type_pion(pion) == False:
+    if not type_pion(pion):
         raise TypeError("placerPionLignePlateau : Le second paramètre n'est pas un pion.")
-    if type(numLigne) != int:
+    if type(numLigne) is not int:
         raise TypeError("placerPionLignePlateau : Le troisième paramètre n'est pas un entier.")
     if numLigne < 0 or numLigne > (const.NB_LINES - 1):
         raise ValueError(f"placerPionLignePlateau : Le troisième paramètre {numLigne} ne désigne pas une ligne.")
-    if type(left) != bool:
+    if type(left) is not bool:
         raise TypeError("placerPionLignePlateau : Le quatrième paramètre n'est pas un booléen.")
     listePionPousse = [pion]
     numLignePionRetour = None
     # Si le pion est poussé par la gauche
-    if left == True:
+    if left is True:
         numDernierPionADecaler = 0
         # On parcourt la ligne pour voir jusqu'où on pousse les pions
-        while numDernierPionADecaler < (const.NB_COLUMNS) and plateau[numLigne][numDernierPionADecaler] != None:
+        while numDernierPionADecaler < const.NB_COLUMNS and plateau[numLigne][numDernierPionADecaler] is not None:
             listePionPousse.append(plateau[numLigne][numDernierPionADecaler])
             numDernierPionADecaler += 1
         # Si le dernier pion poussé est perdu, on affecte le nombre de lignes au retour
         if numDernierPionADecaler == const.NB_COLUMNS:
             numLignePionRetour = const.NB_LINES
         # Sinon si le dernier pion poussé doit "tomber", on cherche à quelle ligne il va le faire
-        elif numLigne < (const.NB_LINES - 1) and plateau[numLigne + 1][numDernierPionADecaler] == None:
+        elif numLigne < (const.NB_LINES - 1) and plateau[numLigne + 1][numDernierPionADecaler] is None:
             numLignePionRetour = const.NB_LINES - 1
-            while plateau[numLignePionRetour][numDernierPionADecaler] != None:
+            while plateau[numLignePionRetour][numDernierPionADecaler] is not None:
                 numLignePionRetour -= 1
             plateau[numLignePionRetour][numDernierPionADecaler] = listePionPousse[len(listePionPousse)-1]
         # Dans les 2 cas ci-dessus, le dernier pion de la liste n'était pas traité dans le déplacement
         # car il était supprimé par remplacement, ou positionné sur une ligne plus basse
-        # Sinon, on est pas dans un de ces deux cas et il faut donc penser à décaler TOUS les pions jusqu'à la position indiquée
+        # Sinon, on est pas dans un de ces deux cas et il faut donc penser à décaler TOUS les pions jusqu'à la
+        # position indiquée
         else:
             numDernierPionADecaler += 1
         # On parcourt la liste des pions et on les décale tous sur le plateau
@@ -396,21 +358,22 @@ def placerPionLignePlateau(plateau : list, pion : dict, numLigne : int, left : b
     else:
         numDernierPionADecaler = const.NB_COLUMNS - 1
         # On parcourt la ligne pour voir jusqu'où on pousse les pions
-        while numDernierPionADecaler >= 0 and plateau[numLigne][numDernierPionADecaler] != None:
+        while numDernierPionADecaler >= 0 and plateau[numLigne][numDernierPionADecaler] is not None:
             listePionPousse.append(plateau[numLigne][numDernierPionADecaler])
             numDernierPionADecaler -= 1
         # Si le dernier pion poussé est perdu, on affecte le nombre de lignes au retour
         if numDernierPionADecaler == -1:
             numLignePionRetour = const.NB_LINES
         # Sinon si le dernier pion poussé doit "tomber", on cherche à quelle ligne il va le faire
-        elif numLigne < (const.NB_LINES - 1) and plateau[numLigne + 1][numDernierPionADecaler] == None:
+        elif numLigne < (const.NB_LINES - 1) and plateau[numLigne + 1][numDernierPionADecaler] is None:
             numLignePionRetour = const.NB_LINES - 1
-            while plateau[numLignePionRetour][numDernierPionADecaler] != None:
+            while plateau[numLignePionRetour][numDernierPionADecaler] is not None:
                 numLignePionRetour -= 1
             plateau[numLignePionRetour][numDernierPionADecaler] = listePionPousse[len(listePionPousse)-1]
         # Dans les 2 cas ci-dessus, le dernier pion de la liste n'était pas traité dans le déplacement
         # car il était supprimé par remplacement, ou positionné sur une ligne plus basse
-        # Sinon, on est pas dans un de ces deux cas et il faut donc penser à décaler TOUS les pions jusqu'à la position indiquée
+        # Sinon, on est pas dans un de ces deux cas et il faut donc penser à décaler TOUS les pions jusqu'à
+        # la position indiquée
         else:
             numDernierPionADecaler -= 1
         # On parcourt la liste des pions et on les décale tous sur le plateau
@@ -420,39 +383,41 @@ def placerPionLignePlateau(plateau : list, pion : dict, numLigne : int, left : b
     return listePionPousse, numLignePionRetour
 
 
-def encoderPlateau(plateau : list)-> str:
+def encoderPlateau(plateau: list) -> str:
     """
-    Retourner le plateau encodé sous forme de chaîne de caractère
-    :param plateau: Le plateau à encoder
-    :return: La chaîne de caractère contenant l'encodage du plateau
+    Transforme le plateau encodé en chaîne de caractères pour en faire une clé de dictionnaire
+
+    :param plateau: Plateau à encoder
+    :return: Chaîne de caractères contenant l'encodage du plateau
     :raise TypeError: Si le paramètre n'est pas un plateau
     """
-    if type_plateau(plateau) == False:
+    if not type_plateau(plateau):
         raise TypeError("encoderPlateau : Le paramètre ne correspond pas à un plateau.")
     encodagePlateau = ""
     for ligne in range(const.NB_LINES):
         for colonne in range(const.NB_COLUMNS):
-            if plateau[ligne][colonne] == None:
+            if plateau[ligne][colonne] is None:
                 encodagePlateau += "_"
             elif plateau[ligne][colonne][const.COULEUR] == const.ROUGE:
                 encodagePlateau += "R"
-            else: # C'est une case contenant un pion jaune
+            else:  # Il y a un pion qui n'est pas rouge, il est donc jaune
                 encodagePlateau += "J"
     return encodagePlateau
 
 
-def isPatPlateau(plateau : list, histogrammesPlateaux:dict)-> bool:
+def isPatPlateau(plateau: list, histogrammesPlateaux: dict) -> bool:
     """
-    Evaluer si c'est la 5e fois que l'on rencontre le plateau
-    :param plateau: Le plateau à évaluer
-    :param histogrammesPlateaux: Un dictionnaire correspondant à "l'histogramme des plateaux"
+    Evalue si c'est la 5e fois que l'on rencontre le plateau
+
+    :param plateau: Plateau à évaluer
+    :param histogrammesPlateaux: Dictionnaire correspondant à "l'histogramme des plateaux"
     :return: True si c'est la 5e fois que l'on rencontre le plateau, False sinon
-    :raise TypeError: Si le paramètre n'est pas un plateau
-    :raise TypeError: Si le paramètre n'est pas un dictionnaire
+    :raise TypeError: Si le premier paramètre n'est pas un plateau
+    :raise TypeError: Si le second paramètre n'est pas un dictionnaire
     """
-    if type_plateau(plateau) == False:
+    if not type_plateau(plateau):
         raise TypeError("isPatPlateau : Le premier paramètre n'est pas un plateau.")
-    if type(histogrammesPlateaux) != dict:
+    if type(histogrammesPlateaux) is not dict:
         raise TypeError("isPatPlateau : Le second paramètre n'est pas un dictionnaire.")
     plateauEncode = encoderPlateau(plateau)
     retour = False
