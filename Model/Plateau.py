@@ -64,7 +64,7 @@ def placerPionPlateau(plateau: list, pion: dict, numeroColonne: int) -> int:
     :raise ValueError: Si l'entier ne représente pas une colonne existante
     """
     if not type_plateau(plateau):
-        raise TypeError("placerPionPlateau : Le premier paramaètre ne correspond pas à un plateau.")
+        raise TypeError("placerPionPlateau : Le premier paramètre ne correspond pas à un plateau.")
     if not type_pion(pion):
         raise TypeError("placerPionPlateau : Le second paramètre n'est pas un pion.")
     if type(numeroColonne) is not int:
