@@ -147,19 +147,19 @@ def _placerPionJoueur(joueur: dict) -> int:
     :param joueur: Joueur (IA) pour lequel il faut choisir la colonne à jouer
     :return: Aucun
     """
-    # Si l'on est pas en mode étendu
-    if const.MODE_ETENDU not in joueur:
-        if const.NIVEAU_IA == 2:
-            nbAlea = trouverCoup(joueur, getPlateauJoueur(joueur), getCouleurJoueur(joueur))
-        else:
+    if const.NIVEAU_IA == 2:
+        nbAlea = trouverCoup(joueur, getPlateauJoueur(joueur), getCouleurJoueur(joueur))
+    else:
+        # Si l'on est pas en mode étendu
+        if const.MODE_ETENDU not in joueur:
             nbAlea = randint(0, const.NB_COLUMNS - 1)
             while joueur[const.PLATEAU][0][nbAlea] is not None:
                 nbAlea = randint(0, const.NB_COLUMNS - 1)
-    # Sinon, on est en mode étendu
-    else:
-        nbAlea = randint(-const.NB_LINES, const.NB_COLUMNS + const.NB_LINES - 1)
-        while ((0 <= nbAlea) and (nbAlea < const.NB_COLUMNS)) and (joueur[const.PLATEAU][0][nbAlea] is not None):
-            nbAlea = randint(-const.NB_LINES, const.NB_COLUMNS + const.NB_LINES - 1)
+        # Sinon, on est en mode étendu
+        else:
+            nbAlea = randint(-const.NB_LINES, const.NB_COLUMNS + const.NB_LINES)
+            while ((0 <= nbAlea) and (nbAlea < const.NB_COLUMNS)) and (joueur[const.PLATEAU][0][nbAlea] is not None):
+                nbAlea = randint(-const.NB_LINES, const.NB_COLUMNS + const.NB_LINES)
     return nbAlea
 
 
