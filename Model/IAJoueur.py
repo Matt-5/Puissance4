@@ -3,6 +3,28 @@ from Model.Plateau import *
 from Model.Joueur import *
 
 
+def copierPlateau(plateau: list) -> list:
+    """
+    Copie en profondeur un plateau
+
+    :param plateau: Plateau à copier
+    :return: Liste de liste correspondant à une copie profonde du plateau
+    :raise TypeError: Si le premier paramètre n'est pas un plateau
+    """
+    if not type_plateau(plateau):
+        raise TypeError("evaluerCoupLigne : Le premier paramètre ne correspond pas à un plateau.")
+    copiePlateau = []
+    for ligne in range(const.NB_LINES):
+        copieLigne = []
+        for colonne in range(const.NB_COLUMNS):
+            if plateau[ligne][colonne] is None:
+                copieLigne.append(None)
+            else:
+                copieLigne.append(plateau[ligne][colonne].copy())
+        copiePlateau.append(copieLigne)
+    return copiePlateau
+
+
 def evaluerCoupLigne(plateau: list, indiceLigne: int, indiceColonne: int, couleurPion: int) -> int:
     """
     Evalue, pour la case donnée, le nombre de lignes encore complétables par couleurPion
