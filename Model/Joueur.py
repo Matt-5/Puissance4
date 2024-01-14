@@ -2,6 +2,7 @@ from Model.Constantes import *
 from Model.Pion import *
 from Model.Plateau import *
 from Model.IAJoueur import *
+from Model.IAJoueurV2 import *
 from random import randint
 
 
@@ -150,7 +151,7 @@ def _placerPionJoueur(joueur: dict) -> int:
     # Si l'on est pas en mode étendu
     if const.MODE_ETENDU not in joueur:
         if const.NIVEAU_IA == 2:
-            nbAlea = meilleurCoup(joueur[const.PLATEAU], joueur[const.COULEUR])
+            nbAlea = trouverCoup(joueur)
         else:
             nbAlea = randint(0, const.NB_COLUMNS - 1)
             while joueur[const.PLATEAU][0][nbAlea] is not None:

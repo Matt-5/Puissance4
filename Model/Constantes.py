@@ -22,7 +22,8 @@ const.NB_COLUMNS = 7
 
 # Niveau de l'IA
 # 1 : IA "stupide" plaçant aléatoirement les pions
-# 2 : IA utilisant l'algorithme MiniMax pour placer les pions
+# 2 : IA jouant de préférence le coup où elle gagne, sinon quand elle bloque l'adversaire, sinon aléatoirement
+# 3 : IA utilisant l'algorithme MiniMax pour placer les pions
 # Si la valeur du niveau pas une valeur possible, le programme considère que l'on joue au niveau 1
 const.NIVEAU_IA = 2
 
