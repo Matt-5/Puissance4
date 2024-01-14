@@ -47,7 +47,7 @@ def evaluerCoupLigne(plateau: list, indiceLigne: int, indiceColonne: int, couleu
     if type(indiceLigne) is not int:
         raise TypeError("evaluerCoupLigne : Le deuxième paramètre ne correspond pas à un entier.")
     if indiceLigne < 0 or indiceLigne >= const.NB_LINES:
-        raise ValueError("evaluerCoupLigne : Le deuxième paramètre n'est pas à un indice de ligne valide.")
+        raise ValueError("evaluerCoupLigne : Le deuxième paramètre n'est pas un indice de ligne valide.")
     if type(indiceColonne) is not int:
         raise TypeError("evaluerCoupLigne : Le troisième paramètre ne correspond pas à un entier.")
     if indiceColonne < 0 or indiceColonne >= const.NB_COLUMNS:
@@ -230,7 +230,7 @@ def evaluerCoup(plateau: list, couleurJoueur: int) -> int:
     Evalue la valeur d'un coup pour le joueur donné
 
     :param plateau: Plateau à analyser
-    :param joueur: Joueur pour lequel on fait l'évaluation
+    :param couleurJoueur: Couleur du joueur pour lequel on fait l'évaluation
     :return: Entier représentant le nombre de possibilités
     :raise TypeError: Si le premier paramètre n'est pas un plateau
     :raise TypeError: Si le deuxième paramètre n'est pas un entier
@@ -290,7 +290,7 @@ def meilleurCoup(plateau, couleurJoueur):
         if plateau[0][colonne] is None:
             copiePlateau = copierPlateau(plateau)
             placerPionPlateau(copiePlateau, construirePion((couleurJoueur + 1) % 2), colonne)
-            score = minimax(copiePlateau, 3, couleurJoueur, False)  # Profondeur de recherche (à ajuster selon les performances)
+            score = minimax(copiePlateau, const.PROFONDEUR, couleurJoueur, False)
             if score > meilleur_score:
                 meilleur_score = score
                 meilleur_colonne = colonne

@@ -149,10 +149,12 @@ def _placerPionJoueur(joueur: dict) -> int:
     """
     # Si l'on est pas en mode étendu
     if const.MODE_ETENDU not in joueur:
-        #nbAlea = randint(0, const.NB_COLUMNS - 1)
-        #while joueur[const.PLATEAU][0][nbAlea] is not None:
-            #nbAlea = randint(0, const.NB_COLUMNS - 1)
-        nbAlea = meilleurCoup(joueur[const.PLATEAU], joueur[const.COULEUR])
+        if const.NIVEAU_IA == 2:
+            nbAlea = meilleurCoup(joueur[const.PLATEAU], joueur[const.COULEUR])
+        else:
+            nbAlea = randint(0, const.NB_COLUMNS - 1)
+            while joueur[const.PLATEAU][0][nbAlea] is not None:
+                nbAlea = randint(0, const.NB_COLUMNS - 1)
     # Sinon, on est en mode étendu
     else:
         nbAlea = randint(-const.NB_LINES, const.NB_COLUMNS + const.NB_LINES - 1)
