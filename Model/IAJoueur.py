@@ -34,10 +34,6 @@ def trouverCoup(joueur: dict, plateau: list, couleurJoueur: int) -> int:
     :param plateau: Plateau à analyser
     :param couleurJoueur: Couleur du joueur pour lequel on cherche l'endroit où placer le pion
     :return: Entier représentant le numéro de la ligne/colonne à jouer
-    :raise TypeError: Si le premier paramètre n'est pas un joueur
-    :raise TypeError: Si le deuxième paramètre n'est pas un plateau
-    :raise TypeError: Si le troisième paramètre n'est pas un entier
-    :raise ValueError: Si l'entier ne correspond pas à une couleur
     """
     colonneChoisie = -(const.NB_LINES+1)
     favorableIA = False
@@ -48,7 +44,7 @@ def trouverCoup(joueur: dict, plateau: list, couleurJoueur: int) -> int:
     else:
         colonne = -const.NB_LINES
         fin = const.NB_COLUMNS + const.NB_LINES
-    # Tant que l'on a pas parcouru tous les coups possibles et que l'on a pas trouvé de coup permettan à l'IA de gagner
+    # Tant que l'on a pas parcouru tous les coups possibles et que l'on a pas trouvé de coup permettant à l'IA de gagner
     while colonne < fin and not favorableIA:
         copiePlateau = copierPlateau(plateau)
         # On place un pion de la couleur du joueur dans la grille
@@ -58,12 +54,12 @@ def trouverCoup(joueur: dict, plateau: list, couleurJoueur: int) -> int:
             colonneChoisie = colonne
             favorableIA = True
         # Si ce cas n'est pas favorable à une victoire du joueur
-        if colonneChoisie == -1:
+        if colonneChoisie == -(const.NB_LINES+1):
             copiePlateau = copierPlateau(plateau)
             # On place un pion de la couleur du joueur adverse dans la grille
             placerPionLigneEtOuColonne(copiePlateau, colonne, (couleurJoueur + 1) % 2)
             # Si on détecte la réalisation d'une combinaison gagnante pour le joueur adverse, on choisit cette position
-            if isFinPossible(copiePlateau, (couleurJoueur+ 1)%2):
+            if isFinPossible(copiePlateau, (couleurJoueur + 1) % 2):
                 colonneChoisie = colonne
                 favorableIA = False
         colonne += 1
@@ -102,12 +98,12 @@ def placerPionLigneEtOuColonne(plateau: list, colonne: int, couleurJoueur) -> No
     :param plateau: Plateau à analyser
     :param colonne: Indice représentant une ligne ou une colonne
     :param couleurJoueur: Couleur du joueur pour lequel il faut placer un pion
-    :return:
+    :return: Aucun
     """
     if (0 <= colonne and colonne < const.NB_COLUMNS) and plateau[0][colonne] is None:
         placerPionPlateau(plateau, construirePion(couleurJoueur), colonne)
     elif colonne < 0:
         placerPionLignePlateau(plateau, construirePion(couleurJoueur), abs(colonne) - 1, True)
     elif colonne >= const.NB_COLUMNS:
-        placerPionLignePlateau(plateau, construirePion(couleurJoueur), colonne - (const.NB_COLUMNS), False)
+        placerPionLignePlateau(plateau, construirePion(couleurJoueur), colonne - (const.NB_LINES + 1), False)
     return None
