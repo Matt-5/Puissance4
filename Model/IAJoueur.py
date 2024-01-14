@@ -39,14 +39,6 @@ def trouverCoup(joueur: dict, plateau: list, couleurJoueur: int) -> int:
     :raise TypeError: Si le troisième paramètre n'est pas un entier
     :raise ValueError: Si l'entier ne correspond pas à une couleur
     """
-    if not type_joueur(joueur):
-        raise TypeError("trouverCoup : Le premier paramètre ne correspond pas à un joueur.")
-    if not type_plateau(plateau):
-        raise TypeError("trouverCoup : Le deuxième paramètre ne correspond pas à un plateau.")
-    if type(couleurJoueur) is not int:
-        raise TypeError("trouverCoup : Le troisième paramètre n'est pas un entier.")
-    if couleurJoueur not in const.COULEURS:
-        raise ValueError("trouverCoup : Le troisième paramètre ne correspond pas à une couleur")
     colonneChoisie = -(const.NB_LINES+1)
     favorableIA = False
     # Défintion des bornes de début et de fin de la recherche
@@ -60,46 +52,65 @@ def trouverCoup(joueur: dict, plateau: list, couleurJoueur: int) -> int:
     while colonne < fin and not favorableIA:
         copiePlateau = copierPlateau(plateau)
         # On place un pion de la couleur du joueur dans la grille
-        if (0 <= colonne and colonne < const.NB_COLUMNS) and plateau[0][colonne] is None:
-            placerPionPlateau(copiePlateau, construirePion(couleurJoueur), colonne)
-        elif colonne < 0:
-            placerPionLignePlateau(copiePlateau, construirePion(couleurJoueur), abs(colonne)-1, True)
-        elif colonne >= const.NB_COLUMNS:
-            placerPionLignePlateau(copiePlateau, construirePion(couleurJoueur), colonne - (const.NB_LINES+1), False)
-        # Si on détecte la réalisation d'une combinaise gagnante pour le joueur, on choisit cette position
-        if (len(detecter4horizontalPlateau(copiePlateau, couleurJoueur)) != 0
-            or len(detecter4verticalPlateau(copiePlateau, couleurJoueur)) != 0
-            or len(detecter4diagonaleDirectePlateau(copiePlateau, couleurJoueur)) != 0
-            or len(detecter4diagonaleIndirectePlateau(copiePlateau, couleurJoueur)) != 0):
+        placerPionLigneEtOuColonne(copiePlateau, colonne, couleurJoueur)
+        # Si on détecte la réalisation d'une combinaison gagnante pour le joueur, on choisit cette position
+        if isFinPossible(copiePlateau, couleurJoueur):
             colonneChoisie = colonne
             favorableIA = True
         # Si ce cas n'est pas favorable à une victoire du joueur
         if colonneChoisie == -1:
             copiePlateau = copierPlateau(plateau)
             # On place un pion de la couleur du joueur adverse dans la grille
-            if (0 <= colonne and colonne < const.NB_COLUMNS) and plateau[0][colonne] is None:
-                placerPionPlateau(copiePlateau, construirePion((couleurJoueur+ 1)%2), colonne)
-            elif colonne < 0:
-                placerPionLignePlateau(copiePlateau, construirePion(couleurJoueur), abs(colonne) - 1, True)
-            elif colonne >= const.NB_COLUMNS:
-                placerPionLignePlateau(copiePlateau, construirePion((couleurJoueur+ 1)%2), colonne - (const.NB_COLUMNS), False)
-            # Si on détecte la réalisation d'une combinaise gagnante pour le joueur adverse, on choisit cette position
-            if (len(detecter4horizontalPlateau(copiePlateau, (couleurJoueur+ 1)%2)) != 0
-                    or len(detecter4verticalPlateau(copiePlateau, (couleurJoueur+ 1)%2)) != 0
-                    or len(detecter4diagonaleDirectePlateau(copiePlateau, (couleurJoueur+ 1)%2)) != 0
-                    or len(detecter4diagonaleIndirectePlateau(copiePlateau, (couleurJoueur+ 1)%2)) != 0):
+            placerPionLigneEtOuColonne(copiePlateau, colonne, (couleurJoueur + 1) % 2)
+            # Si on détecte la réalisation d'une combinaison gagnante pour le joueur adverse, on choisit cette position
+            if isFinPossible(copiePlateau, (couleurJoueur+ 1)%2):
                 colonneChoisie = colonne
                 favorableIA = False
         colonne += 1
     # Si l'on a pas trouvé de coup "intelligent" pour l'IA, on choisit aléatoirement où jouer
     if colonneChoisie == -(const.NB_LINES+1):
-        colonneChoisie = randint(0, const.NB_COLUMNS - 1)
-        while joueur[const.PLATEAU][0][colonneChoisie] is not None:
+        if const.MODE_ETENDU not in joueur:
             colonneChoisie = randint(0, const.NB_COLUMNS - 1)
+            while joueur[const.PLATEAU][0][colonneChoisie] is not None:
+                colonneChoisie = randint(0, const.NB_COLUMNS - 1)
+        else:
+            colonneChoisie = randint(-const.NB_LINES, const.NB_COLUMNS + const.NB_LINES)
+            while (((0 <= colonneChoisie) and (colonneChoisie < const.NB_COLUMNS))
+                   and (joueur[const.PLATEAU][0][colonneChoisie] is not None)):
+                colonneChoisie = randint(-const.NB_LINES, const.NB_COLUMNS + const.NB_LINES)
     return colonneChoisie
 
 
+def isFinPossible(plateau: list, couleurJoueur: int) -> bool:
+    """
+    Détermine si le joueur de la couleur indiquée à gagner
 
+    :param plateau: Plateau à analyser
+    :param couleurJoueur: Couleur du joueur
+    :return: True s'il a gagné, False sinon
+    """
+    return (len(detecter4horizontalPlateau(plateau, couleurJoueur)) != 0
+            or len(detecter4verticalPlateau(plateau, couleurJoueur)) != 0
+            or len(detecter4diagonaleDirectePlateau(plateau, couleurJoueur)) != 0
+            or len(detecter4diagonaleIndirectePlateau(plateau, couleurJoueur)) != 0)
+
+
+def placerPionLigneEtOuColonne(plateau: list, colonne: int, couleurJoueur) -> None:
+    """
+    Place un pion de la couleur indiquée dans la ligne/colonne indiquée
+
+    :param plateau: Plateau à analyser
+    :param colonne: Indice représentant une ligne ou une colonne
+    :param couleurJoueur: Couleur du joueur pour lequel il faut placer un pion
+    :return:
+    """
+    if (0 <= colonne and colonne < const.NB_COLUMNS) and plateau[0][colonne] is None:
+        placerPionPlateau(plateau, construirePion(couleurJoueur), colonne)
+    elif colonne < 0:
+        placerPionLignePlateau(plateau, construirePion(couleurJoueur), abs(colonne) - 1, True)
+    elif colonne >= const.NB_COLUMNS:
+        placerPionLignePlateau(plateau, construirePion(couleurJoueur), colonne - (const.NB_COLUMNS), False)
+    return None
 
 
 
