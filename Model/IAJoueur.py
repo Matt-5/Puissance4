@@ -281,3 +281,17 @@ def minimax(plateau, profondeur, couleurJoueur, isIAJoueur):
                 placerPionPlateau(copiePlateau, construirePion((couleurJoueur + 1) % 2), col)
                 valeur_min = min(valeur_min, minimax(copiePlateau, profondeur - 1, (couleurJoueur + 1) % 2, True))
         return valeur_min
+
+
+def meilleurCoup(plateau, couleurJoueur):
+    meilleur_score = float('-inf')
+    meilleur_colonne = None
+    for colonne in range(7):
+        if plateau[0][colonne] is None:
+            copiePlateau = copierPlateau(plateau)
+            placerPionPlateau(copiePlateau, construirePion((couleurJoueur + 1) % 2), colonne)
+            score = minimax(copiePlateau, 3, couleurJoueur, False)  # Profondeur de recherche (à ajuster selon les performances)
+            if score > meilleur_score:
+                meilleur_score = score
+                meilleur_colonne = colonne
+    return meilleur_colonne
