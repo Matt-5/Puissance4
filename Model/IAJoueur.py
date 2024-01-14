@@ -36,7 +36,7 @@ def trouverCoup(joueur: dict, plateau: list, couleurJoueur: int) -> int:
                 copiePlateau = copierPlateau(plateau)
                 placerPionPlateau(copiePlateau, construirePion(couleurJoueur), colonne)
                 # Si on détecte la réalisation d'une combinaise gagnante pour le joueur, on choisit cette position
-                if placerPionPlateau(copiePlateau, construirePion(couleurJoueur), colonne) and (len(detecter4horizontalPlateau(copiePlateau, couleurJoueur)) != 0
+                if (len(detecter4horizontalPlateau(copiePlateau, couleurJoueur)) != 0
                     or len(detecter4verticalPlateau(copiePlateau, couleurJoueur)) != 0
                     or len(detecter4diagonaleDirectePlateau(copiePlateau, couleurJoueur)) != 0
                     or len(detecter4diagonaleIndirectePlateau(copiePlateau, couleurJoueur)) != 0):
