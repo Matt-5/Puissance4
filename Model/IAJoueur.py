@@ -1,6 +1,7 @@
 from Model.Constantes import *
 from Model.Plateau import *
 from Model.Joueur import *
+from random import randint
 
 
 def copierPlateau(plateau: list) -> list:
@@ -23,6 +24,45 @@ def copierPlateau(plateau: list) -> list:
                 copieLigne.append(plateau[ligne][colonne].copy())
         copiePlateau.append(copieLigne)
     return copiePlateau
+
+
+def trouverCoup(joueur: dict, plateau: list, couleurJoueur: int) -> int:
+    colonneChoisie = -1
+    favorableIA = False
+    if const.MODE_ETENDU not in joueur:
+        colonne = 0
+        while colonne < const.NB_COLUMNS and not favorableIA:
+            if plateau[0][colonne] is None:
+                copiePlateau = copierPlateau(plateau)
+                placerPionPlateau(copiePlateau, construirePion(couleurJoueur), colonne)
+                # Si on détecte la réalisation d'une combinaise gagnante pour le joueur, on choisit cette position
+                if placerPionPlateau(copiePlateau, construirePion(couleurJoueur), colonne) and (len(detecter4horizontalPlateau(copiePlateau, couleurJoueur)) != 0
+                    or len(detecter4verticalPlateau(copiePlateau, couleurJoueur)) != 0
+                    or len(detecter4diagonaleDirectePlateau(copiePlateau, couleurJoueur)) != 0
+                    or len(detecter4diagonaleIndirectePlateau(copiePlateau, couleurJoueur)) != 0):
+                    colonneChoisie = colonne
+                    favorableIA = True
+                elif colonneChoisie == -1:
+                    copiePlateau = copierPlateau(plateau)
+                    placerPionPlateau(copiePlateau, construirePion((couleurJoueur+1)%2), colonne)
+                    if (len(detecter4horizontalPlateau(copiePlateau, (couleurJoueur+1)%2)) != 0
+                        or len(detecter4verticalPlateau(copiePlateau, (couleurJoueur+1)%2)) != 0
+                        or len(detecter4diagonaleDirectePlateau(copiePlateau, (couleurJoueur+1)%2)) != 0
+                        or len(detecter4diagonaleIndirectePlateau(copiePlateau, (couleurJoueur+1)%2)) != 0):
+                        colonneChoisie = colonne
+            colonne += 1
+        if colonneChoisie == -1:
+            colonneChoisie = randint(0, const.NB_COLUMNS - 1)
+            while joueur[const.PLATEAU][0][colonneChoisie] is not None:
+                colonneChoisie = randint(0, const.NB_COLUMNS - 1)
+    return colonneChoisie
+
+
+
+
+
+
+
 
 
 def evaluerCoupLigne(plateau: list, indiceLigne: int, indiceColonne: int, couleurPion: int) -> int:
