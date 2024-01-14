@@ -145,8 +145,8 @@ def detecter4horizontalPlateau(plateau: list, couleur: int) -> list:
             # Si on a 4 pions alignés
             if nbPionsAlignes == 4:
                 # On ajoute ces 4 pions à la liste résultat, et on réinitialise le compteur
-                listePion += [plateau[ligne][colonne-3], plateau[ligne][colonne-2],
-                              plateau[ligne][colonne-1], plateau[ligne][colonne]]
+                listePion.extend([plateau[ligne][colonne-3], plateau[ligne][colonne-2],
+                                  plateau[ligne][colonne-1], plateau[ligne][colonne]])
                 nbPionsAlignes = 0
     return listePion
 
@@ -184,8 +184,8 @@ def detecter4verticalPlateau(plateau: list, couleur: int) -> list:
             # Si on a 4 pions alignés
             if nbPionsAlignes == 4:
                 # On ajoute ces 4 pions à la liste résultat, et on réinitialise le compteur
-                listePion += [plateau[ligne-3][colonne], plateau[ligne-2][colonne],
-                              plateau[ligne-1][colonne], plateau[ligne][colonne]]
+                listePion.extend([plateau[ligne-3][colonne], plateau[ligne-2][colonne],
+                                  plateau[ligne-1][colonne], plateau[ligne][colonne]])
                 nbPionsAlignes = 0
     return listePion
 
@@ -220,8 +220,8 @@ def detecter4diagonaleDirectePlateau(plateau: list, couleur: int) -> list:
                     possible = False
             # Si la diagonale est gagnée, on l'ajoute au résultat !
             if possible:
-                listePion += [plateau[ligne][colonne], plateau[ligne+1][colonne+1],
-                              plateau[ligne+2][colonne+2], plateau[ligne+3][colonne+3]]
+                listePion.extend([plateau[ligne][colonne], plateau[ligne+1][colonne+1],
+                                  plateau[ligne+2][colonne+2], plateau[ligne+3][colonne+3]])
     return listePion
 
 
@@ -255,8 +255,8 @@ def detecter4diagonaleIndirectePlateau(plateau: list, couleur: int) -> list:
                     possible = False
             # Si l'anti-diagonale est gagnée, on l'ajoute au résultat !
             if possible:
-                listePion += [plateau[ligne][colonne], plateau[ligne+1][colonne-1],
-                              plateau[ligne+2][colonne-2], plateau[ligne+3][colonne-3]]
+                listePion.extend([plateau[ligne][colonne], plateau[ligne+1][colonne-1],
+                                  plateau[ligne+2][colonne-2], plateau[ligne+3][colonne-3]])
     return listePion
 
 
@@ -274,10 +274,10 @@ def getPionsGagnantsPlateau(plateau: list) -> list:
     listePionsGagnants = []
     # On mène les 4 analyses (horizontal, vertical, diagonale, diagonale indirecte) pour chaque couleur
     for couleur in const.COULEURS:
-        listePionsGagnants += detecter4verticalPlateau(plateau, couleur)
-        listePionsGagnants += detecter4horizontalPlateau(plateau, couleur)
-        listePionsGagnants += detecter4diagonaleIndirectePlateau(plateau, couleur)
-        listePionsGagnants += detecter4diagonaleDirectePlateau(plateau, couleur)
+        listePionsGagnants.extend(detecter4verticalPlateau(plateau, couleur))
+        listePionsGagnants.extend(detecter4horizontalPlateau(plateau, couleur))
+        listePionsGagnants.extend(detecter4diagonaleIndirectePlateau(plateau, couleur))
+        listePionsGagnants.extend(detecter4diagonaleDirectePlateau(plateau, couleur))
     return listePionsGagnants
 
 
