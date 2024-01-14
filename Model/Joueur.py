@@ -142,10 +142,10 @@ def setPlacerPionJoueur(joueur: dict, fonction: callable) -> None:
 
 def _placerPionJoueur(joueur: dict) -> int:
     """
-    Choisit aléatoirement le numéro de la colonne à jouer
+    Choisit aléatoirement le numéro de la ligne/colonne à jouer
 
-    :param joueur: Joueur (IA) pour lequel il faut choisir la colonne à jouer
-    :return: Aucun
+    :param joueur: Joueur (IA) pour lequel il faut choisir la ligne/colonne à jouer
+    :return: Entier représentant le numéro de la ligne/colonne à jouer
     """
     if const.NIVEAU_IA == 2:
         nbAlea = trouverCoup(joueur, getPlateauJoueur(joueur), getCouleurJoueur(joueur))

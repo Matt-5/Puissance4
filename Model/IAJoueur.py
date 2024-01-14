@@ -13,7 +13,7 @@ def copierPlateau(plateau: list) -> list:
     :raise TypeError: Si le premier paramètre n'est pas un plateau
     """
     if not type_plateau(plateau):
-        raise TypeError("evaluerCoupLigne : Le premier paramètre ne correspond pas à un plateau.")
+        raise TypeError("copierPlateau : Le premier paramètre ne correspond pas à un plateau.")
     copiePlateau = []
     for ligne in range(const.NB_LINES):
         copieLigne = []
@@ -27,14 +27,36 @@ def copierPlateau(plateau: list) -> list:
 
 
 def trouverCoup(joueur: dict, plateau: list, couleurJoueur: int) -> int:
-    colonneChoisie = -1
+    """
+    Choisit semi-aléatoirement le numéro de la ligne/colonne à jouer
+
+    :param joueur: Joueur pour lequel on cherche l'endroit où placer le pion
+    :param plateau: Plateau à analyser
+    :param couleurJoueur: Couleur du joueur pour lequel on cherche l'endroit où placer le pion
+    :return: Entier représentant le numéro de la ligne/colonne à jouer
+    :raise TypeError: Si le premier paramètre n'est pas un joueur
+    :raise TypeError: Si le deuxième paramètre n'est pas un plateau
+    :raise TypeError: Si le troisième paramètre n'est pas un entier
+    :raise ValueError: Si l'entier ne correspond pas à une couleur
+    """
+    if not type_joueur(joueur):
+        raise TypeError("trouverCoup : Le premier paramètre ne correspond pas à un joueur.")
+    if not type_plateau(plateau):
+        raise TypeError("trouverCoup : Le deuxième paramètre ne correspond pas à un plateau.")
+    if type(couleurJoueur) is not int:
+        raise TypeError("trouverCoup : Le troisième paramètre n'est pas un entier.")
+    if couleurJoueur not in const.COULEURS:
+        raise ValueError("trouverCoup : Le troisième paramètre ne correspond pas à une couleur")
+    colonneChoisie = -(const.NB_LINES+1)
     favorableIA = False
+    # Défintion des bornes de début et de fin de la recherche
     if const.MODE_ETENDU not in joueur:
         colonne = 0
         fin = const.NB_COLUMNS
     else:
         colonne = -const.NB_LINES
         fin = const.NB_COLUMNS + const.NB_LINES
+    # Tant que l'on a pas parcouru tous les coups possibles et que l'on a pas trouvé de coup permettan à l'IA de gagner
     while colonne < fin and not favorableIA:
         copiePlateau = copierPlateau(plateau)
         # On place un pion de la couleur du joueur dans la grille
@@ -51,7 +73,7 @@ def trouverCoup(joueur: dict, plateau: list, couleurJoueur: int) -> int:
             or len(detecter4diagonaleIndirectePlateau(copiePlateau, couleurJoueur)) != 0):
             colonneChoisie = colonne
             favorableIA = True
-        # Si on a pas trouvé de cas favorable à la victoire du joueur
+        # Si ce cas n'est pas favorable à une victoire du joueur
         if colonneChoisie == -1:
             copiePlateau = copierPlateau(plateau)
             # On place un pion de la couleur du joueur adverse dans la grille
@@ -61,22 +83,20 @@ def trouverCoup(joueur: dict, plateau: list, couleurJoueur: int) -> int:
                 placerPionLignePlateau(copiePlateau, construirePion(couleurJoueur), abs(colonne) - 1, True)
             elif colonne >= const.NB_COLUMNS:
                 placerPionLignePlateau(copiePlateau, construirePion((couleurJoueur+ 1)%2), colonne - (const.NB_COLUMNS), False)
-            # Si on détecte la réalisation d'une combinaise gagnante pour le joueur, on choisit cette position
+            # Si on détecte la réalisation d'une combinaise gagnante pour le joueur adverse, on choisit cette position
             if (len(detecter4horizontalPlateau(copiePlateau, (couleurJoueur+ 1)%2)) != 0
                     or len(detecter4verticalPlateau(copiePlateau, (couleurJoueur+ 1)%2)) != 0
                     or len(detecter4diagonaleDirectePlateau(copiePlateau, (couleurJoueur+ 1)%2)) != 0
                     or len(detecter4diagonaleIndirectePlateau(copiePlateau, (couleurJoueur+ 1)%2)) != 0):
                 colonneChoisie = colonne
                 favorableIA = False
-
-
         colonne += 1
-    if colonneChoisie == -1:
+    # Si l'on a pas trouvé de coup "intelligent" pour l'IA, on choisit aléatoirement où jouer
+    if colonneChoisie == -(const.NB_LINES+1):
         colonneChoisie = randint(0, const.NB_COLUMNS - 1)
         while joueur[const.PLATEAU][0][colonneChoisie] is not None:
             colonneChoisie = randint(0, const.NB_COLUMNS - 1)
     return colonneChoisie
-
 
 
 
