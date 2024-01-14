@@ -225,7 +225,7 @@ def evaluerCoupDiagonaleIndirecte(plateau: list, indiceLigne: int, indiceColonne
     return nbPossibilites
 
 
-def evaluerCoup(plateau: list, joueur: dict) -> int:
+def evaluerCoup(plateau: list, couleurJoueur: int) -> int:
     """
     Evalue la valeur d'un coup pour le joueur donné
 
@@ -233,19 +233,22 @@ def evaluerCoup(plateau: list, joueur: dict) -> int:
     :param joueur: Joueur pour lequel on fait l'évaluation
     :return: Entier représentant le nombre de possibilités
     :raise TypeError: Si le premier paramètre n'est pas un plateau
-    :raise TypeError: Si le deuxième paramètre n'est pas un joueur
+    :raise TypeError: Si le deuxième paramètre n'est pas un entier
+    :raise ValueError: SI l'entier n'est pas une couleur
     """
     if not type_plateau(plateau):
         raise TypeError("evaluerCoup : Le premier paramètre ne correspond pas à un plateau.")
-    if not type_joueur(joueur):
-        raise TypeError("evaluerCoup : Le deuxième paramètre ne correspond pas à un joueur.")
+    if type(couleurJoueur) is not int:
+        raise TypeError("evaluerCoup : Le deuxième paramètre n'est pas un entier.")
+    if couleurJoueur not in const.COULEURS:
+        raise ValueError("evaluerCoup : Le deuxième paramètre n'est pas une couleur.")
     nbPossibilites = 0
     # Pour chaque couleur de pion possible, on parcourt chaque case du plateau
     for couleur in const.COULEURS:
         for ligne in range(const.NB_LINES):
             for colonne in range(const.NB_COLUMNS):
                 # Si la couleur étudiée est celle du joueur étudiée, les évaluations sont bénéfiques pour le joueur
-                if couleur == joueur[const.COULEUR]:
+                if couleur == couleurJoueur:
                     nbPossibilites += evaluerCoupLigne(plateau, ligne, colonne, couleur)
                     nbPossibilites += evaluerCoupColonne(plateau, ligne, colonne, couleur)
                     nbPossibilites += evaluerCoupDiagonaleDirecte(plateau, ligne, colonne, couleur)
@@ -257,3 +260,24 @@ def evaluerCoup(plateau: list, joueur: dict) -> int:
                     nbPossibilites -= evaluerCoupDiagonaleDirecte(plateau, ligne, colonne, couleur)
                     nbPossibilites -= evaluerCoupDiagonaleIndirecte(plateau, ligne, colonne, couleur)
     return nbPossibilites
+
+
+def minimax(plateau, profondeur, couleurJoueur, isIAJoueur):
+    if profondeur == 0 or isRempliPlateau(plateau):
+        return evaluerCoup(plateau, couleurJoueur)
+    if isIAJoueur:
+        valeur_max = float('-inf')
+        for col in range(const.NB_COLUMNS):
+            if plateau[0][col] is None:
+                copiePlateau = copierPlateau(plateau)
+                placerPionPlateau(copiePlateau, construirePion((couleurJoueur + 1) % 2), col)
+                valeur_max = max(valeur_max, minimax(copiePlateau, profondeur - 1, (couleurJoueur + 1) % 2, False))
+        return valeur_max
+    else:
+        valeur_min = float('inf')
+        for col in range(const.NB_COLUMNS):
+            if plateau[0][col] is None:
+                copiePlateau = copierPlateau(plateau)
+                placerPionPlateau(copiePlateau, construirePion((couleurJoueur + 1) % 2), col)
+                valeur_min = min(valeur_min, minimax(copiePlateau, profondeur - 1, (couleurJoueur + 1) % 2, True))
+        return valeur_min
